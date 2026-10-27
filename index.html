@@ -40,6 +40,12 @@ li.stop{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:ce
 .t{font-variant-numeric:tabular-nums;font-weight:600;color:var(--ink);font-size:14px}
 .n{min-width:0}.n b{font-weight:600;display:block}.n small{color:var(--muted);font-size:13px}
 .go{font:600 13px var(--body);text-decoration:none;color:var(--accent);background:var(--accent-soft);padding:7px 11px;border-radius:8px;white-space:nowrap}
+.near{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
+.near a{font:600 12px var(--body);text-decoration:none;color:var(--ink);background:var(--ink-soft);padding:4px 9px;border-radius:99px;white-space:nowrap}
+.quick{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.quick p{margin:0;font-size:13px;color:var(--muted);font-weight:500}
+.quick div{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.quick a{text-align:center;font:600 14px var(--body);text-decoration:none;color:var(--ink);background:var(--ink-soft);padding:11px 6px;border-radius:10px}
 .cta{display:block;text-align:center;font:600 15px var(--body);text-decoration:none;background:var(--accent);color:#fff;padding:12px;border-radius:10px}
 .panel{display:flex;flex-direction:column;gap:14px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px}
@@ -112,6 +118,10 @@ td{padding:7px 0;border-top:1px solid var(--line)}td:last-child{text-align:right
 
 <script>
 const M=q=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q);
+/* Yakındaki benzinlik / otopark: durağın çevresinde arar */
+const NEAR=(what,q)=>M(what+" near "+q);
+/* Konum verilmeden arama: Google Maps telefonun anlık konumunun çevresinde açar */
+const HERE=what=>"https://www.google.com/maps/search/"+encodeURIComponent(what)+"/";
 const DAYS=[
  {d:"2026-10-28",name:"Çarşamba",tag:"Yol günü",wx:"Adana 16–22°C, yağmur ihtimali %55",
   route:"https://www.google.com/maps/dir/Yayalar,+Pendik,+%C4%B0stanbul/Bakacak+K%C3%B6fte+%C4%B0brahim%27in+Yeri,+Kayna%C5%9Fl%C4%B1,+D%C3%BCzce/Atl%C4%B1+Otoyol+Hizmetleri+Tuzg%C3%B6l%C3%BC,+%C5%9Eerefliko%C3%A7hisar/Halil%C3%BCrrahman+Dinlenme+Tesisleri,+Pozant%C4%B1,+Adana/Golden+Lake+Hotel,+%C3%87ukurova,+Adana",
@@ -121,7 +131,7 @@ const DAYS=[
      ["16:15","Halilürrahman, Pozantı","Çay molası","Halilürrahman Dinlenme Tesisleri Pozantı"],
      ["17:45","Golden Lake Hotel","Otele giriş, dinlenme","Golden Lake Hotel Adana"],
      ["20:00","Şef Kebap","Akşam yemeği · Yenibaraj, otele ~10 dk","Şef Kebap Yenibaraj Adana"]]},
- {d:"2026-10-29",name:"Perşembe",tag:"Şehir",wx:"Adana 14–18°C, yağmur %85 · şemsiye",
+ {d:"2026-10-29",name:"Perşembe",tag:"Şehir",wx:"Adana 14–18°C, yağmur %85 · şemsiye · 29 Ekim tatil: merkezde yol kapanabilir, park zor",
   s:[["09:00","Otelde kahvaltı","Terasta göl manzarasıyla",null],
      ["10:00","Adana Müze Kompleksi","Yarım gün, tek bilet","Adana Arkeoloji Müzesi"],
      ["12:45","Büyük Saat Ciğercisi İbrahim Usta","Öğle yemeği · ciğer şiş + şalgam","Büyük saat Ciğercisi İbrahim Usta Adana"],
@@ -152,6 +162,9 @@ const DAYS=[
 
 const today=new Date(Date.now()+3*3600e3).toISOString().slice(0,10);
 const plan=document.getElementById("plan");
+{const qb=document.createElement("div");qb.className="quick";
+ qb.innerHTML=`<p>Şu an yakınımda</p><div><a target="_blank" rel="noopener">⛽ Benzinlik</a><a target="_blank" rel="noopener">🅿️ Otopark</a></div>`;
+ const [b1,b2]=qb.querySelectorAll("a");b1.href=HERE("benzin istasyonu");b2.href=HERE("otopark");plan.append(qb)}
 DAYS.forEach(day=>{
   const c=document.createElement("article");c.className="day"+(day.d===today?" today":"");
   const dd=new Date(day.d+"T12:00:00").getDate();
@@ -161,6 +174,9 @@ DAYS.forEach(day=>{
   day.s.forEach(([t,n,s,q])=>{const li=document.createElement("li");li.className="stop";
     li.innerHTML=`<span class="t">${t}</span><span class="n"><b></b><small></small></span>`;
     li.querySelector("b").textContent=n;li.querySelector("small").textContent=s;
+    if(q){const nr=document.createElement("span");nr.className="near";
+      [["⛽ Benzin","benzin istasyonu"],["🅿️ Otopark","otopark"]].forEach(([l,w])=>{const x=document.createElement("a");x.href=NEAR(w,q);x.target="_blank";x.rel="noopener";x.textContent=l;nr.append(x)});
+      li.querySelector(".n").append(nr)}
     if(q){const a=document.createElement("a");a.className="go";a.href=M(q);a.target="_blank";a.rel="noopener";a.textContent="Git";li.append(a)}else li.append(document.createElement("span"));
     ol.append(li)});
   c.append(ol);plan.append(c)});
