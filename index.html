@@ -219,13 +219,21 @@ li.stop.edit,li.stop.ekle{display:block}
 .lbok{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:64px;border:0;border-radius:12px;background:rgba(255,255,255,.14);color:#fff;font-size:32px;cursor:pointer}
 .lbok.sol{left:8px}.lbok.sag{right:8px}
 .lbyuk{position:absolute;bottom:20px;color:#fff;font-size:13px;background:rgba(0,0,0,.5);padding:6px 10px;border-radius:8px}
+/* Konum izni tarifi ve linkle park */
+.kyardim{background:var(--ink-soft);border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.45;color:var(--fg);text-align:left}
+.kyardim p{margin:0 0 4px;font-weight:600}.kyardim ol{margin:0;padding-left:18px}.kyardim li{margin:3px 0}
+.ktekrar{margin-top:8px;font:600 13px var(--body);padding:8px 12px;border-radius:9px;border:0;background:var(--ink);color:var(--surface);cursor:pointer}
+.plink{display:flex;flex-direction:column;gap:6px;margin-top:6px}.plink small{color:var(--muted);font-size:12.5px;line-height:1.4}
+.plsatir{display:flex;gap:6px}.plsatir input{flex:1;min-width:0;font:400 15px var(--body);padding:9px 10px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--fg)}
+.plsatir button{font:600 14px var(--body);padding:0 12px;border-radius:9px;border:0;background:var(--ink);color:var(--surface);cursor:pointer}
+.pmesaj{display:block}
 </style>
 
 <div class="wrap">
 <header>
   <h1>Adana <span>→</span> Kapadokya</h1>
   <p class="sub">28 Ekim – 1 Kasım · Pendik'ten arabayla, 5 gün</p>
-  <p class="sub"><a href="yeni/" style="color:var(--ink);font-weight:600">✨ Yeni sürümü dene: tüm gezilerin tek yerde →</a></p>
+  <p class="sub"><a href="https://sozenn.github.io/gezi/" style="color:var(--ink);font-weight:600">✨ Yeni uygulama: tüm gezilerin tek yerde →</a></p>
 </header>
 
 <div class="sirada" id="sirada" hidden aria-live="polite"></div>
@@ -390,6 +398,11 @@ const dk=t=>{if(!t)return null;const [h,m]=t.split(":").map(Number);return h*60+
 const gece=m=>m!=null&&m<300?m+1440:m;
 const gunAdi=d=>{const g=DAYS.find(x=>x.d===d);return g?g.name:new Date(d+"T12:00:00").toLocaleDateString("tr-TR",{weekday:"long"})};
 const bugunStr=()=>{const n=new Date();return n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")+"-"+String(n.getDate()).padStart(2,"0")};
+/* Yeni uygulamaya (sozenn.github.io/gezi) aktarım için bu gezinin güncel hali. Yalnız bu cihazda kalır. */
+function v1Kaydet(){try{const pl={};Object.entries(P.items).forEach(([k,x])=>{if(x)pl[k]=Object.assign({},x,{c:cikisMi(x)})});
+  const Y={a:{ad:"Adana",alt:"Seyhan, Adana",la:37.0,lo:35.32,il:"Adana",ilce:"Seyhan"},k:{ad:"Karaisalı",alt:"Adana",la:37.255,lo:35.06,il:"Adana",ilce:"Karaisalı"},g:{ad:"Göreme",alt:"Nevşehir",la:38.643,lo:34.828,il:"Nevşehir",ilce:"Nevşehir Merkez"}};
+  localStorage.setItem("v1-aktarim",JSON.stringify({ad:"Adana – Kapadokya",bas:"2026-10-28",son:"2026-11-01",yer:Y.a,
+    gunler:{"2026-10-28":{yer:Y.a},"2026-10-29":{yer:Y.a},"2026-10-30":{yer:Y.k},"2026-10-31":{yer:Y.g},"2026-11-01":{yer:Y.g}},plan:pl}))}catch(e){}}
 const cikisMi=s=>s.c===true||(s.c===undefined&&/^(Pendik Yayalar|Otelden çıkış)$/.test(s.n||""));
 const zamanOf=s=>{const d=new Date(s.d+"T"+(s.t||"00:00")+":00");if(dk(s.t)<300)d.setDate(d.getDate()+1);return d};
 
@@ -500,6 +513,7 @@ function planCiz(){
       li.append(r);ol.append(li)}
     c.append(ol);if(window.ekstraHazir)c.append(gunlukKutu(day.d));gunler.append(c)});
   if(window.ekstraHazir)tahminYaz();
+  v1Kaydet();
   siradaCiz();
 }
 
@@ -616,16 +630,50 @@ const TEL=L.telefon=depo("telefon",telVarsayilan,()=>telCiz());
 planCiz();telCiz();
 const t=plan.querySelector(".today");if(t)setTimeout(()=>t.scrollIntoView({block:"start"}),0);
 
+/* Konum izni yardımı: telefona ve tarayıcıya göre adım adım tarif (kod: 1 izin yok, 2 GPS kapalı, 3 zaman aşımı) */
+function konumYardim(kod,tekrar){
+  const ua=navigator.userAgent,ios=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1),
+    uygulamaIci=/FBAN|FBAV|Instagram|Line\/|; wv\)|GSA\//.test(ua),samsung=/SamsungBrowser/.test(ua);
+  const k=document.createElement("div");k.className="kyardim";
+  const p=t=>{const x=document.createElement("p");x.textContent=t;k.append(x)};
+  const ol=document.createElement("ol");const li=t=>{const x=document.createElement("li");x.textContent=t;ol.append(x)};
+  if(kod===2){p("Telefonun konumu (GPS) kapalı görünüyor.");li(ios?"Ayarlar → Gizlilik ve Güvenlik → Konum Servisleri'ni aç.":"Ekranın üstünden bildirim panelini aşağı çek, Konum'u aç.");li("Sonra \"Tekrar dene\"ye bas.")}
+  else if(kod===3){p("Konum zamanında alınamadı. Kapalı bir yerdeysen açık havada tekrar dene.")}
+  else if(uygulamaIci){p("Sayfa bir uygulamanın (WhatsApp, Instagram vb.) içindeki tarayıcıda açılmış; orada konum çalışmayabilir.");
+    li(ios?"Alttaki Safari simgesine ya da ⋯ menüsünden \"Safari'de Aç\"a dokun.":"Sağ üstteki ⋮ menüden \"Chrome'da aç\" (ya da \"Tarayıcıda aç\") de.");li("Açılan tarayıcıda konum sorulunca \"İzin ver\"e dokun.")}
+  else if(ios){p("iPhone'da konum izni üç yerden açılır:");li("Ayarlar → Gizlilik ve Güvenlik → Konum Servisleri: açık olsun.");
+    li("Aynı ekranda aşağıda \"Safari Web Siteleri\" → \"Uygulamayı Kullanırken\" seç.");li("Ayarlar → Safari → aşağıda Konum → \"Sor\" ya da \"İzin Ver\" seç.");li("Buraya dön, \"Tekrar dene\"ye bas; sorulursa \"İzin Ver\" de.")}
+  else if(samsung){p("Samsung Internet'te:");li("Alttaki ☰ menü → Ayarlar → Siteler ve indirmeler → Site izinleri → Konum → sozenn.github.io'yu bul, izni aç ya da listeden sil.");
+    li("Telefon Ayarları → Uygulamalar → Samsung Internet → İzinler → Konum → \"Yalnızca uygulama kullanılırken izin ver\".");li("Bildirim panelinden telefonun Konum'unun açık olduğuna bak, sonra \"Tekrar dene\"ye bas.")}
+  else{p("Android Chrome'da:");li("Adres çubuğunun en solundaki simgeye (⚙ ayar ya da 🔒 kilit) dokun → İzinler → Konum'u aç.");
+    li("O simge yoksa: Chrome sağ üst ⋮ → Ayarlar → Site ayarları → Konum → \"Engellenen\" altında sozenn.github.io → İzin ver.");
+    li("Telefon Ayarları → Uygulamalar → Chrome → İzinler → Konum → \"Uygulamayı kullanırken izin ver\".");li("Bildirim panelinden telefonun Konum'unun açık olduğuna bak, sonra \"Tekrar dene\"ye bas.")}
+  if(ol.children.length)k.append(ol);
+  if(tekrar){const b=document.createElement("button");b.type="button";b.className="ktekrar";b.textContent="↻ Tekrar dene";b.onclick=tekrar;k.append(b)}
+  return k}
+/* Google Maps paylaşım linkinden konum (kısa linklerde yalnız link saklanır) */
+function haritaLinki(u){u=String(u||"").trim();if(!/^https?:\/\/(maps\.app\.goo\.gl|goo\.gl\/maps|(www\.)?google\.[a-z.]+\/maps|maps\.google\.)/i.test(u))return null;
+  const o={gl:u};const m=u.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/)||u.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/)||u.match(/[?&](?:q|query|destination|ll)=(-?\d+\.\d+),\s*(-?\d+\.\d+)/);
+  if(m){o.la=+(+m[1]).toFixed(6);o.lo=+(+m[2]).toFixed(6)}return o}
+/* İzin olmadan park kaydı: Google Maps'te mavi noktayı paylaşıp linki yapıştır */
+function parkLinkFormu(kaydet){
+  const f=document.createElement("form");f.className="plink";
+  const s=document.createElement("small");s.textContent="İzin vermeden de olur: Google Maps uygulamasında mavi noktaya (konumuna) dokun → Paylaş → Linki kopyala, buraya yapıştır.";
+  const i=document.createElement("input");i.placeholder="Google Maps linkini yapıştır";i.inputMode="url";
+  const b=document.createElement("button");b.type="submit";b.textContent="Kaydet";
+  const r=document.createElement("div");r.className="plsatir";r.append(i,b);f.append(s,r);
+  f.onsubmit=e=>{e.preventDefault();const o=haritaLinki(i.value);if(!o){alert("Bu bir Google Maps linki gibi görünmüyor.");return}kaydet(Object.assign(o,{t:Date.now(),n:""}))};
+  return f}
 /* ---------- Park yerim (grupla ortak) ---------- */
 const parkKutu=el("div","park");document.querySelector("#plan .quick").append(parkKutu);
 const PARK=L.park=depo("park",()=>({}),()=>parkCiz());
 function parkCiz(){
   parkKutu.textContent="";const a=PARK.items.araba;
-  if(a&&a.la){
+  if(a&&(a.la||a.gl)){
     const b=el("div","pbilgi");b.append(el("b",null,"🚗 Arabam burada"),el("small",null,sure(Date.now()-a.t)+" önce kaydedildi"+(a.n?" · "+a.n:"")));parkKutu.append(b);
     const r=el("div","pbtns");
-    r.append(link("https://www.google.com/maps/dir/?api=1&travelmode=walking&destination="+a.la+","+a.lo,"ana","➜ Arabama dön"),
-      link("https://www.google.com/maps/search/?api=1&query="+a.la+","+a.lo,null,"📍 Harita"));
+    r.append(link(a.la?"https://www.google.com/maps/dir/?api=1&travelmode=walking&destination="+a.la+","+a.lo:a.gl,"ana","➜ Arabama dön"),
+      link(a.la?"https://www.google.com/maps/search/?api=1&query="+a.la+","+a.lo:a.gl,null,"📍 Harita"));
     const n=el("button",null,a.n?"Notu değiştir":"Not ekle");n.type="button";n.onclick=()=>{const v=prompt("Not (örn. 2. kat, B blok):",a.n||"");if(v!==null)PARK.koy("araba",{n:v.trim()})};
     const s=el("button",null,"Sil");s.type="button";s.onclick=()=>{if(confirm("Park yeri silinsin mi?"))PARK.sil("araba")};
     r.append(n,s);parkKutu.append(r);
@@ -636,8 +684,9 @@ function parkCiz(){
       if(!("geolocation" in navigator)){m.textContent="Bu tarayıcı konum vermiyor.";return}
       m.textContent="Konum alınıyor…";
       navigator.geolocation.getCurrentPosition(p=>{PARK.koy("araba",{la:+p.coords.latitude.toFixed(6),lo:+p.coords.longitude.toFixed(6),t:Date.now(),n:""})},
-        e=>{m.textContent=e.code===1?"Konum izni kapalı. Hava kutusundaki tarifle izni aç.":"Konum alınamadı, tekrar dene."},
+        e=>{m.textContent="";m.append(konumYardim(e.code,()=>k.click()))},
         {enableHighAccuracy:true,timeout:20000,maximumAge:0})};
+    parkKutu.append(parkLinkFormu(v=>PARK.koy("araba",v)));
   }
 }
 parkCiz();setInterval(()=>{if(PARK.items.araba)parkCiz()},60000);
@@ -1039,8 +1088,7 @@ function sehirler(){
 function butonGoster(mesaj,engelli){
   box.innerHTML="";
   if(mesaj){const p=document.createElement("small");p.style.color="var(--muted)";p.textContent=mesaj;box.append(p)}
-  if(engelli){const p=document.createElement("p");p.className="hyol";
-    p.textContent="Konum izni daha önce engellenmiş, tarayıcı tekrar sormuyor. Açmak için: adres çubuğundaki 🔒 ya da ⓘ simgesine dokun → İzinler (Site ayarları) → Konum → İzin ver. İzni açtığın anda hava kendiliğinden gelir.";box.append(p)}
+  if(engelli){box.append(konumYardim(engelli===true?1:engelli,()=>al(true)))}
   else{const b=document.createElement("button");b.type="button";b.className="hbtn";b.textContent="📍 Konumumun hava durumunu göster";b.onclick=()=>al(true);box.append(b)}
   box.append(sehirler());
 }
@@ -1072,8 +1120,7 @@ function al(elle){
   navigator.geolocation.getCurrentPosition(async pos=>{
     await getir(pos.coords.latitude,pos.coords.longitude,null);calisiyor=false;
   },err=>{calisiyor=false;
-    if(err.code===1)butonGoster(null,true);
-    else eski?goster(eski,"Konum alınamadı, tekrar dene."):butonGoster("Konum alınamadı, tekrar dene.")},
+    butonGoster(null,err.code)},
   {enableHighAccuracy:false,timeout:15000,maximumAge:600000});
 }
 document.getElementById("havaBtn").onclick=()=>al(true);
