@@ -45,7 +45,7 @@ li.stop{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:ce
 .quick{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
 .quick p{margin:0;font-size:13px;color:var(--muted);font-weight:500}
 .quick div{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.quick a{text-align:center;font:600 13.5px var(--body);text-decoration:none;color:var(--ink);background:var(--ink-soft);padding:11px 6px;border-radius:10px}
+.quick a{text-align:center;font:600 13px var(--body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none;color:var(--ink);background:var(--ink-soft);padding:11px 6px;border-radius:10px}
 .cta{display:block;text-align:center;font:600 15px var(--body);text-decoration:none;background:var(--accent);color:#fff;padding:12px;border-radius:10px}
 .panel{display:flex;flex-direction:column;gap:14px}
 [hidden]{display:none!important}
@@ -74,6 +74,17 @@ td{padding:7px 0;border-top:1px solid var(--line)}td:last-child{text-align:right
 .phead{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
 .pct{font-family:var(--display);font-size:28px;font-weight:800;color:var(--ok);font-variant-numeric:tabular-nums}
 .reset{align-self:flex-start;font:600 13px var(--body);padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
+.hava{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.hbtn{font:600 14px var(--body);padding:10px;border-radius:10px;border:0;background:var(--ink-soft);color:var(--ink);cursor:pointer}
+.hrow{display:flex;align-items:center;gap:12px}
+.hico{font-size:38px;line-height:1}
+.htmp{font-family:var(--display);font-weight:800;font-size:34px;line-height:1;font-variant-numeric:tabular-nums}
+.hdesc{display:flex;flex-direction:column;min-width:0}
+.hdesc b{font-weight:600}.hdesc small{color:var(--muted);font-size:13px}
+.hmeta{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;color:var(--muted)}
+.hmeta span b{color:var(--fg);font-weight:600}
+.hfoot{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}
+.hfoot button{font:600 12px var(--body);border:0;background:none;color:var(--ink);cursor:pointer;padding:0}
 .prog{height:12px;background:var(--ink-soft);border-radius:99px;overflow:hidden}.prog i{display:block;height:100%;background:var(--ok);width:0;transition:width .3s}
 @media (prefers-reduced-motion:reduce){.prog i{transition:none}}
 </style>
@@ -83,6 +94,10 @@ td{padding:7px 0;border-top:1px solid var(--line)}td:last-child{text-align:right
   <h1>Adana <span>→</span> Kapadokya</h1>
   <p class="sub">28 Ekim – 1 Kasım · Pendik'ten arabayla, 5 gün</p>
 </header>
+
+<div class="hava" id="hava" aria-live="polite">
+  <button type="button" class="hbtn" id="havaBtn">📍 Konumumun hava durumunu göster</button>
+</div>
 
 <nav role="tablist">
   <button role="tab" id="tab-plan" aria-selected="true" data-p="plan">Program</button>
@@ -289,5 +304,69 @@ document.getElementById("evSifirla").onclick=()=>{if(confirm("Tüm işaretler ka
     if(document.activeElement!==kb)kb.value=v.bas||"";if(document.activeElement!==ks)ks.value=v.son||"";if(document.activeElement!==lt)lt.value=v.litre||"";gercek()},()=>{})})();
 </script>
 
+<script>
+/* Anlık hava durumu: telefonun konumu + Open-Meteo (anahtarsız). Son sonuç bu cihazda saklanır. */
+(()=>{
+const box=document.getElementById("hava");
+const KOD={0:["☀️","Açık"],1:["🌤️","Az bulutlu"],2:["⛅","Parçalı bulutlu"],3:["☁️","Kapalı"],45:["🌫️","Sisli"],48:["🌫️","Kırağılı sis"],
+ 51:["🌦️","Hafif çisenti"],53:["🌦️","Çisenti"],55:["🌧️","Yoğun çisenti"],56:["🌧️","Donan çisenti"],57:["🌧️","Donan çisenti"],
+ 61:["🌦️","Hafif yağmur"],63:["🌧️","Yağmurlu"],65:["🌧️","Kuvvetli yağmur"],66:["🌧️","Donan yağmur"],67:["🌧️","Donan yağmur"],
+ 71:["🌨️","Hafif kar"],73:["🌨️","Karlı"],75:["❄️","Yoğun kar"],77:["🌨️","Kar taneleri"],
+ 80:["🌦️","Sağanak"],81:["🌧️","Kuvvetli sağanak"],82:["⛈️","Şiddetli sağanak"],85:["🌨️","Kar sağanağı"],86:["❄️","Yoğun kar sağanağı"],
+ 95:["⛈️","Gök gürültülü"],96:["⛈️","Dolu ihtimali"],99:["⛈️","Dolulu fırtına"]};
+const saat=iso=>iso?iso.slice(11,16):"";
+const oku=()=>{try{return JSON.parse(localStorage.getItem("hava"))}catch(e){return null}};
+const yaz=v=>{try{localStorage.setItem("hava",JSON.stringify(v))}catch(e){}};
+function goster(v,not){
+  const c=v.w.current,d=v.w.daily;let [ico,ad]=KOD[c.weather_code]||["🌡️","—"];
+  if(!c.is_day&&ico==="☀️")ico="🌙";if(!c.is_day&&ico==="🌤️")ico="🌙";
+  const yas=Math.round((Date.now()-v.t)/60000);
+  box.innerHTML=`<div class="hrow"><span class="hico"></span><span class="htmp"></span><span class="hdesc"><b></b><small></small></span></div>
+   <div class="hmeta"></div><div class="hfoot"><span></span><button type="button">↻ Yenile</button></div>`;
+  box.querySelector(".hico").textContent=ico;
+  box.querySelector(".htmp").textContent=Math.round(c.temperature_2m)+"°";
+  box.querySelector(".hdesc b").textContent=ad;
+  box.querySelector(".hdesc small").textContent="📍 "+(v.yer||"Konumun");
+  const m=[["Hissedilen",Math.round(c.apparent_temperature)+"°"],["Bugün",Math.round(d.temperature_2m_min[0])+"° / "+Math.round(d.temperature_2m_max[0])+"°"],
+    ["Yağmur",(d.precipitation_probability_max[0]??"—")+"%"],["Rüzgâr",Math.round(c.wind_speed_10m)+" km/sa"],["Gün batımı",saat(d.sunset[0])]];
+  const hm=box.querySelector(".hmeta");m.forEach(([k,x])=>{const sp=document.createElement("span");sp.append(k+" ");const b=document.createElement("b");b.textContent=x;sp.append(b);hm.append(sp)});
+  box.querySelector(".hfoot span").textContent=not||(yas<1?"Az önce güncellendi":yas<60?yas+" dk önce güncellendi":"Son güncelleme "+new Date(v.t).toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"}));
+  box.querySelector(".hfoot button").onclick=()=>al(true);
+}
+function butonGoster(mesaj){
+  box.innerHTML="";if(mesaj){const p=document.createElement("small");p.style.color="var(--muted)";p.textContent=mesaj;box.append(p)}
+  const b=document.createElement("button");b.type="button";b.className="hbtn";b.textContent="📍 Konumumun hava durumunu göster";b.onclick=()=>al(true);box.append(b);
+}
+let calisiyor=false;
+function al(elle){
+  if(calisiyor)return;
+  if(!("geolocation" in navigator))return butonGoster("Bu tarayıcı konum vermiyor.");
+  calisiyor=true;const eski=oku();
+  if(eski)goster(eski,"Güncelleniyor…");else box.innerHTML='<small style="color:var(--muted)">Konum alınıyor…</small>';
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    const {latitude:la,longitude:lo}=pos.coords;
+    try{
+      const u="https://api.open-meteo.com/v1/forecast?latitude="+la.toFixed(3)+"&longitude="+lo.toFixed(3)+
+        "&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,is_day&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunset&forecast_days=1&timezone=auto";
+      const w=await (await fetch(u)).json();if(!w.current)throw 0;
+      let yer=eski&&Math.abs(eski.la-la)<0.05&&Math.abs(eski.lo-lo)<0.05?eski.yer:"";
+      if(!yer){try{const r=await (await fetch("https://nominatim.openstreetmap.org/reverse?format=json&zoom=12&accept-language=tr&lat="+la.toFixed(3)+"&lon="+lo.toFixed(3))).json();
+        const a=r.address||{};yer=[a.town||a.city_district||a.county||a.suburb||a.village,a.province||a.state||a.city].filter(Boolean).filter((x,i,arr)=>arr.indexOf(x)===i).join(", ")}catch(e){}}
+      const v={t:Date.now(),la,lo,yer,w};yaz(v);goster(v);
+    }catch(e){eski?goster(eski,"İnternet yok, son bilinen hava gösteriliyor"):butonGoster("Hava durumu alınamadı, internet bağlantını kontrol et.")}
+    calisiyor=false;
+  },err=>{calisiyor=false;
+    const m=err.code===1?"Konum izni verilmedi. Tarayıcı ayarlarından bu siteye konum izni ver.":"Konum alınamadı, tekrar dene.";
+    eski?goster(eski,m):butonGoster(m)},{enableHighAccuracy:false,timeout:15000,maximumAge:600000});
+}
+document.getElementById("havaBtn").onclick=()=>al(true);
+const eski=oku();if(eski)goster(eski);
+/* İzin daha önce verildiyse sormadan güncelle */
+navigator.permissions?.query({name:"geolocation"}).then(p=>{if(p.state==="granted")al(false)}).catch(()=>{});
+/* Sayfa açık kaldıkça 15 dakikada bir, sekmeye dönünce de güncelle */
+const tazele=()=>{const v=oku();if(v&&Date.now()-v.t>15*60000&&!document.hidden)navigator.permissions?.query({name:"geolocation"}).then(p=>{if(p.state==="granted")al(false)}).catch(()=>{})};
+setInterval(tazele,60000);document.addEventListener("visibilitychange",tazele);
+})();
+</script>
 <script>if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{})</script>
 </body></html>
