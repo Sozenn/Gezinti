@@ -529,8 +529,7 @@ function siradaCiz(){
   btn("✓ Vardım",()=>vardim(id,list,i),"vard");
   if(gec>10){const yuv=Math.max(5,Math.round(gec/5)*5);btn("Kalanı +"+yuv+" dk kaydır",()=>kaydir(list,i,yuv))}
   else{g.append(el("small",null,"Gecikme:"));[15,30,60].forEach(d=>btn("+"+d,()=>kaydir(list,i,d)))}
-  btn("Diğer…",()=>{const v=prompt("Bugünün kalanı kaç dakika kaydırılsın?
-Geç kaldıysan artı (örn. 90), erken gittiysen eksi yaz (örn. -20).","");
+  btn("Diğer…",()=>{const v=prompt("Bugünün kalanı kaç dakika kaydırılsın? Geç kaldıysan artı (örn. 90), erken gittiysen eksi yaz (örn. -20).","");
     if(v===null)return;const d=Math.round(+String(v).replace(",",".").replace(/[^\d.-]/g,""));
     if(!d||Math.abs(d)>720)return alert("Geçerli bir dakika yaz (en fazla 12 saat).");kaydir(list,i,d)});
   const son=sonKaydirma();if(son)btn("↶ Geri al",()=>geriAl(),"geri");
