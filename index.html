@@ -44,8 +44,8 @@ li.stop{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:ce
 .near a{font:600 12px var(--body);text-decoration:none;color:var(--ink);background:var(--ink-soft);padding:4px 9px;border-radius:99px;white-space:nowrap}
 .quick{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
 .quick p{margin:0;font-size:13px;color:var(--muted);font-weight:500}
-.quick div{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.quick a{text-align:center;font:600 13px var(--body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none;color:var(--ink);background:var(--ink-soft);padding:11px 6px;border-radius:10px}
+.quick>div:not(.park){display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.quick>div:not(.park) a{text-align:center;font:600 13px var(--body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none;color:var(--ink);background:var(--ink-soft);padding:11px 6px;border-radius:10px}
 .cta{display:block;text-align:center;font:600 15px var(--body);text-decoration:none;background:var(--accent);color:#fff;padding:12px;border-radius:10px}
 .panel{display:flex;flex-direction:column;gap:14px}
 [hidden]{display:none!important}
@@ -162,6 +162,44 @@ li.stop.edit,li.stop.ekle{display:block}
 .hsehir small{color:var(--muted);font-size:12px}
 .hsehir button{font:600 12.5px var(--body);padding:5px 10px;border-radius:99px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
 .hyol{margin:0;font-size:13px;line-height:1.45;background:var(--ink-soft);color:var(--fg);padding:10px 12px;border-radius:10px}
+/* Saat değişkenliği */
+.sgec{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.sgec small{opacity:.8;font-size:12.5px}
+.sgec button{font:600 13px var(--body);padding:7px 11px;border-radius:9px;border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;cursor:pointer}
+.sgec button.vard{background:#3fa66a;border-color:#3fa66a}
+.smola{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;font-size:13.5px;font-weight:600;background:#f4b43a;color:#3a2600;padding:8px 10px;border-radius:10px}
+.smola a{color:#3a2600}
+.stop.vardi .n b::before{content:"✓ ";color:var(--ok)}
+.stop.vardi{opacity:.75}
+/* Park */
+.park{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:10px}
+.pkaydet{font:600 14px var(--body);padding:11px;border-radius:10px;border:1px dashed var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+.pmesaj{color:var(--muted);font-size:12.5px}
+.pbilgi{display:flex;flex-direction:column}.pbilgi small{color:var(--muted);font-size:12.5px}
+.pbtns{display:flex;flex-wrap:wrap;gap:6px}
+.pbtns a,.pbtns button{font:600 13px var(--body);padding:8px 12px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--fg);text-decoration:none;cursor:pointer}
+.pbtns a.ana{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+/* Tahmin ve günlük */
+.tahmin{display:flex;flex-direction:column;gap:3px;margin:0;font-size:13.5px}
+.tahmin .tet{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.tahmin .rozet{align-self:flex-start}
+.bnot{color:var(--muted);font-size:12px}
+.gunluk{border-top:1px solid var(--line);padding-top:8px}
+.gunluk summary{cursor:pointer;font-weight:600;color:var(--ink)}
+.gnot{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:start;padding:6px 0;font-size:14px;white-space:pre-wrap}
+.gnot small{color:var(--muted);font-variant-numeric:tabular-nums;padding-top:2px}
+.gunluk textarea{flex:1;min-width:0;font:400 15px var(--body);padding:9px 10px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--fg);resize:vertical}
+/* Gün kartı: aç/kapa ve gün başında düzenle */
+.dhead{align-items:center!important}
+.dtoggle{display:flex;align-items:center;gap:8px;border:0;background:none;padding:0;color:var(--fg);cursor:pointer;text-align:left;min-width:0}
+.dtoggle .ok{color:var(--muted);font-size:14px;width:14px}
+.dsag{display:flex;align-items:center;gap:6px}
+.dduz{font:600 13px var(--body);padding:6px 10px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;white-space:nowrap}
+.dduz.ana{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+.day.kapali{gap:4px;padding:12px 16px}
+.day.bitti .dtoggle h2{color:var(--muted)}
+.ozet{margin:0;color:var(--muted);font-size:13px}
+.gsifirla{margin-top:8px;width:100%;font:600 13px var(--body);padding:8px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
 </style>
 
 <div class="wrap">
@@ -319,6 +357,7 @@ function depo(ad,varsayilan,ciz){
   return{
     get items(){return items},
     koy(id,v){items[id]=Object.assign(items[id]||{},v);yaz({[id]:v})},
+    toplu(d){Object.entries(d).forEach(([id,v])=>{if(v===null)delete items[id];else items[id]=Object.assign(items[id]||{},v)});yaz(d)},
     sil(id){delete items[id];yaz({[id]:null})},
     sifirla(){items=varsayilan();yaz(null,items)},
     hepsi:()=>items,uzak(v){items=v&&typeof v==="object"?v:{};sakla();ciz()},yenile:()=>ciz()};
@@ -341,14 +380,13 @@ function planVarsayilan(){const o={};let k=1;
 
 /* ---------- Program ---------- */
 const plan=document.getElementById("plan");
-let duzenle=false,acikForm=null;
+let duzenle=null,acikForm=null;
 {const qb=el("div","quick");qb.append(el("p",null,"Şu an yakınımda"));const box=el("div");
  YAKIN.forEach(([l,w])=>box.append(link(HERE(w),null,l)));
  /* Google nöbet listesini bilmez: eczaneler.gen.tr'nin il/ilçe sayfasına gider, konum hava kutusundan gelir */
  const nb=link("https://www.eczaneler.gen.tr/",null,"🌙 Nöbetçi eczane");nb.id="nobetci";box.append(nb);
  qb.append(box);plan.append(qb)}
 const acil=el("details","card acil");plan.append(acil);
-const pbar=el("div","pbar");plan.append(pbar);
 const gunler=el("div","gunler");plan.append(gunler);
 
 function saatRozeti(s){
@@ -359,7 +397,8 @@ function saatRozeti(s){
     if(ac!=null&&simdi<ac){r.classList.add("kirmizi");r.textContent=`Şu an kapalı · ${s.ac}'da açılır`}
     else if(kp!=null&&simdi>=kp){r.classList.add("kirmizi");r.textContent=`Şu an kapalı · ${s.kp}'da kapandı`}
     else if(kp!=null&&kp-simdi<=60){r.classList.add("sari");r.textContent=`Kapanmasına ${kp-simdi} dk · ${s.kp}`}
-    else{r.classList.add("yesil");r.textContent="Şu an açık"+(s.kp?` · ${s.kp}'da kapanır`:"")}
+    else if(ac!=null){r.classList.add("yesil");r.textContent="Şu an açık"+(s.kp?` · ${s.kp}'da kapanır`:"")}
+    else r.textContent=`🕘 ${s.kp}'da kapanır`
     return r}
   if(ac!=null&&plan_<ac){r.classList.add("sari");r.textContent=`⚠ ${s.ac}'da açılıyor, plan saati erken`}
   else if(kp!=null&&plan_>=kp){r.classList.add("kirmizi");r.textContent=`⚠ ${s.kp}'da kapanıyor, plan saati geç`}
@@ -381,37 +420,63 @@ function durakFormu(id,d,ol){
     v.c=!!v.c;if(!v.q)v.q=v.n;acikForm=null;P.koy(id||yeniId(),Object.assign(v,{d}))};
   return f}
 
+/* Biten gün: son durağın saatinden 2 saat geçtiyse ya da tarih geride kaldıysa. Kullanıcı açıp kapatabilir. */
+let gunAcik={};try{gunAcik=JSON.parse(sessionStorage.getItem("gunAcik"))||{}}catch(e){}
+function gunBitti(d,duraklar){
+  if(d<bugunStr())return true;
+  if(!duraklar.length)return false;
+  return Date.now()>Math.max(...duraklar.map(([,s])=>zamanOf(s).getTime()))+2*3600e3}
 function planCiz(){
-  gunler.textContent="";pbar.textContent="";
-  const db=el("button",duzenle?"ana":"",duzenle?"✓ Düzenlemeyi bitir":"✏️ Planı düzenle");db.type="button";
-  db.onclick=()=>{duzenle=!duzenle;acikForm=null;planCiz()};pbar.append(db);
-  if(duzenle){const r=el("button",null,"Planı baştan yükle");r.type="button";
-    r.onclick=()=>{if(confirm("Plan ilk haline dönsün mü? Eklediğin ve değiştirdiğin duraklar silinir."))P.sifirla()};pbar.append(r)}
+  gunler.textContent="";
   const bugun=bugunStr();
   const tum=Object.entries(P.items).filter(([,s])=>s&&s.d&&s.n);
   DAYS.forEach(day=>{
-    const c=el("article","day"+(day.d===bugun?" today":""));
-    const h=el("div","dhead");h.append(el("h2",null,day.name+" "+new Date(day.d+"T12:00:00").getDate()),el("span","tag",day.d===bugun?"Bugün":day.tag));
-    c.append(h,el("p","wx",day.wx));
+    const duraklar=tum.filter(([,s])=>s.d===day.d).sort((a,b)=>gece(dk(a[1].t))-gece(dk(b[1].t)));
+    const bitti=gunBitti(day.d,duraklar);
+    const acik=gunAcik[day.d]!==undefined?gunAcik[day.d]:!bitti;
+    const duz=duzenle===day.d;
+    const c=el("article","day"+(day.d===bugun?" today":"")+(bitti?" bitti":"")+(acik?"":" kapali"));c.dataset.d=day.d;
+    /* Başlık: dokununca aç/kapa */
+    const h=el("div","dhead");
+    const bas=el("button","dtoggle");bas.type="button";bas.setAttribute("aria-expanded",acik);
+    bas.append(el("span","ok",acik?"▾":"▸"),el("h2",null,day.name+" "+new Date(day.d+"T12:00:00").getDate()));
+    bas.onclick=()=>{gunAcik[day.d]=!acik;try{sessionStorage.setItem("gunAcik",JSON.stringify(gunAcik))}catch(e){}if(!gunAcik[day.d]&&duz)duzenle=null;planCiz()};
+    const sag=el("div","dsag");
+    sag.append(el("span","tag",day.d===bugun?"Bugün":bitti?"Bitti ✓":day.tag));
+    if(acik){const e=el("button","dduz"+(duz?" ana":""),duz?"✓ Bitti":"✏️ Düzenle");e.type="button";
+      e.onclick=()=>{duzenle=duz?null:day.d;acikForm=null;planCiz()};sag.append(e)}
+    h.append(bas,sag);c.append(h);
+    if(!acik){
+      const v=duraklar.filter(([,s])=>s.v).length;
+      c.append(el("p","ozet",duraklar.length+" durak"+(v?" · "+v+" tanesine varıldı":"")+" · görmek için dokun"));
+      gunler.append(c);return}
+    c.append(el("p","wx",day.wx),el("p","tahmin"));
     if(day.route)c.append(link(day.route,"cta","Tüm rotayı Google Maps'te aç"));
     const ol=el("ol");
-    tum.filter(([,s])=>s.d===day.d).sort((a,b)=>gece(dk(a[1].t))-gece(dk(b[1].t))).forEach(([id,s])=>{
-      const li=el("li","stop");
+    duraklar.forEach(([id,s])=>{
+      const li=el("li","stop"+(s.v?" vardi":""));
       if(acikForm===id){li.classList.add("edit");li.append(durakFormu(id,day.d));ol.append(li);return}
       const n=el("span","n");n.append(el("b",null,s.n));if(s.s)n.append(el("small",null,s.s));
       const r=saatRozeti(s);if(r)n.append(r);
-      if(s.q&&!duzenle){const nr=el("span","near");YAKIN.forEach(([l,w])=>nr.append(link(NEAR(w,s.q),null,l)));n.append(nr)}
+      if(s.q&&!duz){const nr=el("span","near");YAKIN.forEach(([l,w])=>nr.append(link(NEAR(w,s.q),null,l)));n.append(nr)}
       li.append(el("span","t",s.t),n);
-      if(duzenle){const x=el("span","dact");const e=el("button",null,"✎");e.type="button";e.setAttribute("aria-label",s.n+" düzenle");
+      if(duz){const x=el("span","dact");const e=el("button",null,"✎");e.type="button";e.setAttribute("aria-label",s.n+" düzenle");
         e.onclick=()=>{acikForm=id;planCiz()};
         const d=el("button",null,"×");d.type="button";d.setAttribute("aria-label",s.n+" sil");
         d.onclick=()=>{if(confirm(s.n+" plandan silinsin mi?"))P.sil(id)};x.append(e,d);li.append(x)}
       else li.append(cikisMi(s)?el("span","go cik","Çıkış"):s.q?link(M(s.q),"go","Git"):el("span"));
       ol.append(li)});
     if(acikForm==="yeni-"+day.d){const li=el("li","stop edit");li.append(durakFormu(null,day.d));ol.append(li)}
-    else if(duzenle){const li=el("li","stop ekle");const b=el("button",null,"+ Durak ekle");b.type="button";
-      b.onclick=()=>{acikForm="yeni-"+day.d;planCiz()};li.append(b);ol.append(li)}
-    c.append(ol);gunler.append(c)});
+    else if(duz){const li=el("li","stop ekle");const b=el("button",null,"+ Durak ekle");b.type="button";
+      b.onclick=()=>{acikForm="yeni-"+day.d;planCiz()};li.append(b);
+      const r=el("button","gsifirla","Bu günü ilk haline döndür");r.type="button";
+      r.onclick=()=>{if(!confirm(day.name+" planı ilk haline dönsün mü? Bu güne eklediğin ve değiştirdiğin duraklar silinir."))return;
+        const d={};duraklar.forEach(([id])=>d[id]=null);
+        Object.values(planVarsayilan()).filter(x=>x.d===day.d).forEach(x=>d[yeniId()+Math.random().toString(36).slice(2,4)]=x);
+        P.toplu(d)};
+      li.append(r);ol.append(li)}
+    c.append(ol);if(window.ekstraHazir)c.append(gunlukKutu(day.d));gunler.append(c)});
+  if(window.ekstraHazir)tahminYaz();
   siradaCiz();
 }
 
@@ -420,27 +485,56 @@ const sirada=document.getElementById("sirada");
 function sure(ms){const m=Math.round(ms/60000);if(m<60)return m+" dk";const h=Math.floor(m/60),r=m%60;if(h<24)return h+" sa"+(r?" "+r+" dk":"");const g=Math.floor(h/24);return g+" gün"+(h%24?" "+(h%24)+" sa":"")}
 function siradaCiz(){
   const now=Date.now();
-  const list=Object.values(P.items).filter(s=>s&&s.d&&s.t&&s.n).map(s=>({s,z:zamanOf(s).getTime()})).sort((a,b)=>a.z-b.z);
+  const list=Object.entries(P.items).filter(([,s])=>s&&s.d&&s.t&&s.n).map(([id,s])=>({id,s,z:zamanOf(s).getTime()})).sort((a,b)=>a.z-b.z);
   if(!list.length||now>list[list.length-1].z+3*3600e3){sirada.hidden=true;return}
-  /* 20 dakika öncesine kadar başlamış durak "şimdi" sayılır */
-  const hedefMi=x=>x.s.q&&!cikisMi(x.s);
-  const i=list.findIndex(x=>x.z>=now-20*60e3&&hedefMi(x));if(i<0){sirada.hidden=true;return}
-  const {s,z}=list[i],fark=z-now;
-  /* Hedeften önce henüz geçmemiş bir çıkış varsa (ör. 05:30 Pendik) onu ayrıca göster */
-  const cik=list.slice(0,i).filter(x=>x.z>=now-20*60e3&&cikisMi(x.s)).pop();
+  /* Hedef: "vardım" denmemiş ilk durak. 90 dakikadan fazla geride kalan durak atlanmış sayılır. */
+  const hedefMi=x=>x.s.q&&!cikisMi(x.s)&&!x.s.v;
+  const i=list.findIndex(x=>hedefMi(x)&&x.z>=now-90*60e3);if(i<0){sirada.hidden=true;return}
+  const {id,s,z}=list[i],fark=z-now,gec=Math.round(-fark/60000);
+  const cik=list.slice(0,i).filter(x=>x.z>=now-20*60e3&&cikisMi(x.s)&&!x.s.v).pop();
   sirada.hidden=false;sirada.textContent="";
   const ust=el("div","sust");
-  ust.append(el("span","setk",fark<=0?"Şimdi":cik?"İlk mola":"Sıradaki durak"),
-    el("span","ssay",fark<=0?"başladı":sure(fark)+" sonra"));
-  const ad=el("div","sad");ad.append(el("b",null,s.n),el("small",null,gunAdi(s.d)+" "+s.t+(s.s?" · "+s.s:"")));
-  const r=saatRozeti(s);if(r)ad.append(r);
+  ust.append(el("span","setk",gec>10?"Gecikmeli":fark<=0?"Şimdi":cik?"İlk mola":"Sıradaki durak"),
+    el("span","ssay",gec>10?gec+" dk geride":fark<=0?"varış saati":sure(fark)+" sonra"));
   sirada.append(ust);
   if(cik){const cf=cik.z-now;sirada.append(el("div","scik","🚗 Yola çıkış "+cik.s.t+" · "+cik.s.n+(cf>0?" · "+sure(cf)+" sonra":" · şimdi")))}
+  /* Sürüş molası: önceki duraktan bu yana 2 saati geçtiyse ve sıradaki mola hâlâ uzaktaysa uyar */
+  const once=list.slice(0,i).filter(x=>x.z<=now).pop();
+  if(once&&!cik){const bas=once.s.ay||once.s.v||once.z,yol=now-bas;
+    if(yol>=2*3600e3&&fark>20*60e3&&yol<8*3600e3){const m=el("div","smola");m.append(el("span",null,"☕ "+sure(yol)+"dır yoldasın. Yorgunsan mola ver."),link(HERE("dinlenme tesisi"),null,"En yakın tesis →"));sirada.append(m)}}
+  const ad=el("div","sad");ad.append(el("b",null,s.n),el("small",null,gunAdi(s.d)+" "+s.t+(s.s?" · "+s.s:"")));
+  const r=saatRozeti(s);if(r)ad.append(r);
   sirada.append(ad);
   const b=el("div","sbtn");
   if(s.q){b.append(link(NAV(s.q),"ana","➜ Yol tarifi"),link(M(s.q),null,"📍 Haritada"))}
-  const sonra=list.slice(i+1).find(hedefMi);if(sonra)b.append(el("small","ssonra","Sonra: "+sonra.s.t+" "+sonra.s.n));
   sirada.append(b);
+  /* Saat değişkenliği: vardım, gecikme kaydırma, geri al */
+  const g=el("div","sgec");
+  const btn=(t,f,cls)=>{const x=el("button",cls||"",t);x.type="button";x.onclick=f;g.append(x)};
+  btn("✓ Vardım",()=>vardim(id,list,i),"vard");
+  if(gec>10){const yuv=Math.max(5,Math.round(gec/5)*5);btn("Kalanı +"+yuv+" dk kaydır",()=>kaydir(list,i,yuv))}
+  else{g.append(el("small",null,"Gecikme:"));[15,30,60].forEach(d=>btn("+"+d,()=>kaydir(list,i,d)))}
+  const son=sonKaydirma();if(son)btn("↶ Geri al",()=>geriAl(),"geri");
+  sirada.append(g);
+  const sonra=list.slice(i+1).find(hedefMi);if(sonra)sirada.append(el("small","ssonra","Sonra: "+sonra.s.t+" "+sonra.s.n));
+}
+const saatEkle=(t,d)=>{let m=(dk(t)+d)%1440;if(m<0)m+=1440;return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0")};
+function sonKaydirma(){try{const x=JSON.parse(localStorage.getItem("sonKaydirma"));return x&&Date.now()-x.t<6*3600e3?x:null}catch(e){return null}}
+/* Hedef ve aynı günün sonraki duraklarını kaydır (gece yarısını geçen duraklar dahil) */
+function kaydir(list,i,d,haric){
+  const hedef=list[i],ids=list.slice(haric?i+1:i).filter(x=>x.s.d===hedef.s.d&&!x.s.v).map(x=>x.id);
+  if(!ids.length)return;
+  const yeni={};ids.forEach(k=>yeni[k]={t:saatEkle(P.items[k].t,d)});
+  try{localStorage.setItem("sonKaydirma",JSON.stringify({t:Date.now(),ids,d}))}catch(e){}
+  P.toplu(yeni);
+}
+function geriAl(){const x=sonKaydirma();if(!x)return;const yeni={};x.ids.forEach(k=>{if(P.items[k])yeni[k]={t:saatEkle(P.items[k].t,-x.d)}});
+  try{localStorage.removeItem("sonKaydirma")}catch(e){}P.toplu(yeni)}
+function vardim(id,list,i){
+  const gec=Math.round((Date.now()-list[i].z)/60000);
+  P.koy(id,{v:Date.now()});
+  if(gec>10){const yuv=Math.round(gec/5)*5;
+    if(confirm(`Plandan ${yuv} dk geç vardın. Bugünün kalan durakları da ${yuv} dk kaydırılsın mı?`))kaydir(list,i,yuv,true)}
 }
 setInterval(()=>{siradaCiz();if(Object.values(P.items).some(s=>s.d===bugunStr()&&(s.ac||s.kp))&&!acikForm)planCiz()},60000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)siradaCiz()});
@@ -478,6 +572,91 @@ const P=L.plan=depo("plan",planVarsayilan,()=>planCiz());
 const TEL=L.telefon=depo("telefon",telVarsayilan,()=>telCiz());
 planCiz();telCiz();
 const t=plan.querySelector(".today");if(t)setTimeout(()=>t.scrollIntoView({block:"start"}),0);
+
+/* ---------- Park yerim (grupla ortak) ---------- */
+const parkKutu=el("div","park");document.querySelector("#plan .quick").append(parkKutu);
+const PARK=L.park=depo("park",()=>({}),()=>parkCiz());
+function parkCiz(){
+  parkKutu.textContent="";const a=PARK.items.araba;
+  if(a&&a.la){
+    const b=el("div","pbilgi");b.append(el("b",null,"🚗 Arabam burada"),el("small",null,sure(Date.now()-a.t)+" önce kaydedildi"+(a.n?" · "+a.n:"")));parkKutu.append(b);
+    const r=el("div","pbtns");
+    r.append(link("https://www.google.com/maps/dir/?api=1&travelmode=walking&destination="+a.la+","+a.lo,"ana","➜ Arabama dön"),
+      link("https://www.google.com/maps/search/?api=1&query="+a.la+","+a.lo,null,"📍 Harita"));
+    const n=el("button",null,a.n?"Notu değiştir":"Not ekle");n.type="button";n.onclick=()=>{const v=prompt("Not (örn. 2. kat, B blok):",a.n||"");if(v!==null)PARK.koy("araba",{n:v.trim()})};
+    const s=el("button",null,"Sil");s.type="button";s.onclick=()=>{if(confirm("Park yeri silinsin mi?"))PARK.sil("araba")};
+    r.append(n,s);parkKutu.append(r);
+  }else{
+    const k=el("button","pkaydet","🅿️ Park yerimi kaydet");k.type="button";parkKutu.append(k);
+    const m=el("small","pmesaj");parkKutu.append(m);
+    k.onclick=()=>{
+      if(!("geolocation" in navigator)){m.textContent="Bu tarayıcı konum vermiyor.";return}
+      m.textContent="Konum alınıyor…";
+      navigator.geolocation.getCurrentPosition(p=>{PARK.koy("araba",{la:+p.coords.latitude.toFixed(6),lo:+p.coords.longitude.toFixed(6),t:Date.now(),n:""})},
+        e=>{m.textContent=e.code===1?"Konum izni kapalı. Hava kutusundaki tarifle izni aç.":"Konum alınamadı, tekrar dene."},
+        {enableHighAccuracy:true,timeout:20000,maximumAge:0})};
+  }
+}
+parkCiz();setInterval(()=>{if(PARK.items.araba)parkCiz()},60000);
+
+/* ---------- Gezi günlüğü (grupla ortak) ---------- */
+const G=L.gunluk=depo("gunluk",()=>({}),()=>planCiz());
+const gunlukAcik=new Set();
+function gunlukKutu(d){
+  const det=el("details","gunluk");det.open=gunlukAcik.has(d);det.ontoggle=()=>det.open?gunlukAcik.add(d):gunlukAcik.delete(d);
+  const notlar=Object.entries(G.items).filter(([,x])=>x&&x.d===d&&x.m).sort((a,b)=>(a[1].s||0)-(b[1].s||0));
+  det.append(el("summary",null,"📝 Günlük"+(notlar.length?" ("+notlar.length+")":"")));
+  notlar.forEach(([id,x])=>{const r=el("div","gnot");r.append(el("small",null,new Date(x.s).toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"})),el("span",null,x.m));
+    const s=el("button","del","×");s.type="button";s.setAttribute("aria-label","Notu sil");s.onclick=()=>{if(confirm("Not silinsin mi?"))G.sil(id)};r.append(s);det.append(r)});
+  const f=el("form","add");const t=el("textarea");t.rows=2;t.maxLength=500;t.placeholder="Ne yediniz, neyi beğendiniz?";t.setAttribute("aria-label","Günlük notu");
+  const b=el("button",null,"Ekle");b.type="submit";f.append(t,b);
+  f.onsubmit=e=>{e.preventDefault();const v=t.value.trim();if(!v)return;gunlukAcik.add(d);G.koy(yeniId(),{d,m:v,s:Date.now()})};
+  det.append(f);return det;
+}
+
+/* ---------- Günlük hava tahmini + balon öngörüsü ---------- */
+const YERLER={adana:[37.0,35.32,"Adana"],karaisali:[37.255,35.06,"Karaisalı"],goreme:[38.643,34.828,"Göreme"]};
+const GUN_YER={"2026-10-28":"adana","2026-10-29":"adana","2026-10-30":"karaisali","2026-10-31":"goreme","2026-11-01":"goreme"};
+let TAH=null;try{TAH=JSON.parse(localStorage.getItem("tahmin"))}catch(e){}
+async function tahminAl(){
+  if(TAH&&Date.now()-TAH.t<2*3600e3)return;
+  try{
+    const ks=Object.keys(YERLER),bas=DAYS[0].d,son=DAYS[DAYS.length-1].d;
+    const u="https://api.open-meteo.com/v1/forecast?latitude="+ks.map(k=>YERLER[k][0]).join(",")+"&longitude="+ks.map(k=>YERLER[k][1]).join(",")+
+      "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max&timezone=Europe%2FIstanbul&start_date="+bas+"&end_date="+son;
+    const g=YERLER.goreme;
+    const u2="https://api.open-meteo.com/v1/forecast?latitude="+g[0]+"&longitude="+g[1]+"&hourly=wind_speed_10m,wind_gusts_10m,precipitation_probability,visibility&timezone=Europe%2FIstanbul&start_date="+bas+"&end_date="+son;
+    const [a,b]=await Promise.all([fetch(u).then(r=>r.json()),fetch(u2).then(r=>r.json())]);
+    const arr=Array.isArray(a)?a:[a];if(!arr[0]||!arr[0].daily)return;
+    const gun={};ks.forEach((k,i)=>{const d=arr[i].daily;d.time.forEach((t,j)=>{gun[k+t]={c:d.weather_code[j],mn:d.temperature_2m_min[j],mx:d.temperature_2m_max[j],y:d.precipitation_probability_max[j],r:d.wind_speed_10m_max[j]}})});
+    const h=b.hourly||{},bal={};
+    (h.time||[]).forEach((t,j)=>{if(/T0[67]:00$/.test(t)){const d=t.slice(0,10),o=bal[d]||(bal[d]={w:0,g:0,y:0,v:1e9});
+      o.w=Math.max(o.w,h.wind_speed_10m[j]);o.g=Math.max(o.g,h.wind_gusts_10m[j]);o.y=Math.max(o.y,h.precipitation_probability[j]??0);o.v=Math.min(o.v,h.visibility[j]??1e9)}});
+    TAH={t:Date.now(),gun,bal};try{localStorage.setItem("tahmin",JSON.stringify(TAH))}catch(e){}
+    tahminYaz();
+  }catch(e){}
+}
+const IKON=c=>c==null?"":c===0?"☀️":c<=2?"⛅":c===3?"☁️":c<=48?"🌫️":c<=57?"🌦️":c<=67?"🌧️":c<=77?"🌨️":c<=82?"🌧️":"⛈️";
+/* Balon için kaba öngörü. Resmi karar her sabah verilir; eşikler kesin değil. */
+function balonYorum(o){
+  if(o.w<=10&&o.g<=18&&o.y<30&&o.v>=5000)return["yesil","uygun görünüyor"];
+  if(o.w<=15&&o.g<=25&&o.y<50&&o.v>=3000)return["sari","riskli"];
+  return["kirmizi","iptal ihtimali yüksek"]}
+function tahminYaz(){
+  document.querySelectorAll(".day[data-d]").forEach(c=>{
+    const d=c.dataset.d,yk=GUN_YER[d],x=TAH&&TAH.gun&&TAH.gun[yk+d],p=c.querySelector(".tahmin");if(!p)return;
+    p.textContent="";
+    if(!x){p.append(el("span",null,"Güncel tahmin yükleniyor…"));return}
+    p.append(el("span","tet","Güncel tahmin · "+YERLER[yk][2]),
+      el("span",null,`${IKON(x.c)} ${Math.round(x.mn)}–${Math.round(x.mx)}°C · yağmur %${x.y??"—"} · rüzgâr ${Math.round(x.r)} km/sa`));
+    const bl=TAH.bal&&TAH.bal[d];
+    if(d===DAYS[DAYS.length-1].d&&bl){const [renk,yorum]=balonYorum(bl);
+      const s=el("span","rozet "+renk,`🎈 Balon (06–07): rüzgâr ${Math.round(bl.w)}, hamle ${Math.round(bl.g)} km/sa · ${yorum}`);p.append(s);
+      p.append(el("small","bnot","Resmi değil: uçuş izni her sabah ~05:00'te verilir. Kesin durumu balon firması ya da otel resepsiyonu bilir."))}
+  });
+}
+window.ekstraHazir=true;planCiz();tahminAl();
+setInterval(tahminAl,30*60e3);document.addEventListener("visibilitychange",()=>{if(!document.hidden)tahminAl()});
 
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
   document.querySelectorAll("nav button").forEach(x=>x.setAttribute("aria-selected",x===b));

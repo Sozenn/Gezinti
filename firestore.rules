@@ -6,7 +6,7 @@ service cloud.firestore {
     match /gruplar/{kod}/listeler/{liste} {
       allow get: if kod.size() == 12;
       allow create, update: if kod.size() == 12
-        && liste in ['bavul', 'ev', 'bavulOneri', 'evOneri', 'plan', 'masraf', 'telefon']
+        && liste in ['bavul', 'ev', 'bavulOneri', 'evOneri', 'plan', 'masraf', 'telefon', 'park', 'gunluk']
         && request.resource.data.keys().hasOnly(['items'])
         && request.resource.data.items is map
         && request.resource.data.items.size() <= 300;
