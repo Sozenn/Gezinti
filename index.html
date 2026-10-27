@@ -471,9 +471,8 @@ function yeniKod(){const a=new Uint32Array(12);crypto.getRandomValues(a);return 
 async function firebase(){
   if(fb)return fb;
   const u=n=>`https://www.gstatic.com/firebasejs/${V}/firebase-${n}.js`;
-  const [{initializeApp},{getAuth,signInAnonymously},fs]=await Promise.all([import(u("app")),import(u("auth")),import(u("firestore"))]);
+  const [{initializeApp},fs]=await Promise.all([import(u("app")),import(u("firestore"))]);
   const app=initializeApp(CFG);
-  await signInAnonymously(getAuth(app));
   let db;try{db=fs.initializeFirestore(app,{localCache:fs.persistentLocalCache({tabManager:fs.persistentMultipleTabManager()})})}catch(e){db=fs.getFirestore(app)}
   fb={db,...fs};return fb;
 }
