@@ -96,6 +96,68 @@ td{padding:7px 0;border-top:1px solid var(--line)}td:last-child{text-align:right
 .hfoot button{font:600 12px var(--body);border:0;background:none;color:var(--ink);cursor:pointer;padding:0}
 .prog{height:12px;background:var(--ink-soft);border-radius:99px;overflow:hidden}.prog i{display:block;height:100%;background:var(--ok);width:0;transition:width .3s}
 @media (prefers-reduced-motion:reduce){.prog i{transition:none}}
+/* Sıradaki durak */
+.sirada{background:var(--ink);color:#fff;border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.sust{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.setk{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;opacity:.85}
+.ssay{font-family:var(--display);font-weight:800;font-size:20px;font-variant-numeric:tabular-nums}
+.sad{display:flex;flex-direction:column;gap:3px}.sad b{font-family:var(--display);font-size:22px;line-height:1.15}.sad small{opacity:.85;font-size:13px}
+.sbtn{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sbtn a{font:600 15px var(--body);text-decoration:none;padding:11px 16px;border-radius:10px;background:rgba(255,255,255,.16);color:#fff}
+.sbtn a.ana{background:#fff;color:var(--ink);flex:1;text-align:center;min-width:140px}
+.ssonra{flex-basis:100%;opacity:.8;font-size:12.5px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sirada{background:#1c3a4c}}
+:root[data-theme="dark"] .sirada{background:#1c3a4c}
+/* Saat rozetleri */
+.rozet{display:inline-block;margin-top:4px;font-size:12px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--ink-soft);color:var(--ink)}
+.rozet.yesil{background:#e3f4ea;color:#1f6b3d}.rozet.sari{background:#fff1d6;color:#8a5a00}.rozet.kirmizi{background:var(--accent-soft);color:var(--accent)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .rozet.yesil{background:#173323;color:#7fd6a0}:root:not([data-theme="light"]) .rozet.sari{background:#3a2e10;color:#fcd34d}}
+.sirada .rozet{background:rgba(255,255,255,.18);color:#fff}
+/* Plan düzenleme */
+.pbar{display:flex;gap:8px;flex-wrap:wrap}
+.pbar button,.stop.ekle button,.dbtn button,.dact button{font:600 14px var(--body);padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.pbar button.ana,.dbtn button.ana{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+.dact{display:flex;gap:4px}.dact button{padding:6px 10px}
+li.stop.edit,li.stop.ekle{display:block}
+.stop.ekle button{width:100%;border-style:dashed;color:var(--ink)}
+.dform{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:4px 0}
+.dform label:nth-child(2),.dform label:nth-child(3),.dform label:nth-child(4){grid-column:1/-1}
+.dform input{font:400 15px var(--body);padding:9px 10px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--fg);width:100%;box-sizing:border-box}
+.dbtn{grid-column:1/-1;display:flex;gap:8px}
+/* Acil */
+.acil summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer}
+.tlist{display:flex;flex-direction:column}
+.trow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--line)}
+.tad{flex:1;min-width:140px;display:flex;flex-direction:column}.tad small{color:var(--muted);font-size:12.5px}
+.tara{font:600 15px var(--body);text-decoration:none;background:var(--ok);color:#fff;padding:9px 14px;border-radius:10px;white-space:nowrap}
+.tno{display:flex;gap:6px;flex-basis:100%}.tno input{flex:1;min-width:0;font:400 15px var(--body);padding:8px 10px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--fg)}
+.tno button{font:600 14px var(--body);padding:0 12px;border-radius:9px;border:0;background:var(--ink);color:var(--surface)}
+.tbul{font-size:13px;color:var(--ink);font-weight:600}
+.acil .add input{flex:1}
+/* Masraf */
+.pct.mas{color:var(--accent)}
+.mform{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mform select,.mform input{font:400 15px var(--body);padding:10px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--fg);width:100%;box-sizing:border-box;min-width:0}
+.mform input[type=number]{font-weight:600;font-variant-numeric:tabular-nums}
+.mform button{grid-column:1/-1;font:600 15px var(--body);padding:11px;border-radius:10px;border:0;background:var(--ink);color:var(--surface);cursor:pointer}
+.kat{display:flex;flex-direction:column;gap:8px}
+.krow{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:14px}.krow b{font-variant-numeric:tabular-nums}
+.kbar{grid-column:1/-1;height:6px;background:var(--ink-soft);border-radius:99px;overflow:hidden}.kbar i{display:block;height:100%;background:var(--accent)}
+.mgun{border-top:1px solid var(--line);padding-top:8px}
+.mgun summary{display:flex;justify-content:space-between;cursor:pointer;font-weight:600;padding:4px 0}
+.mrow{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:8px;padding:6px 0;font-size:14px}
+.mrow small{color:var(--muted)}.mrow b{font-variant-numeric:tabular-nums}
+.yozet{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--muted);background:var(--ink-soft);padding:10px 12px;border-radius:10px}
+.yozet b{color:var(--fg);font-variant-numeric:tabular-nums}
+/* Otoyol */
+.oty{display:flex;flex-direction:column}
+.orow{display:flex;flex-direction:row!important;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--line);color:var(--fg)!important;font-size:14px!important}
+.orow input{width:110px;flex:none;font:600 15px var(--body);padding:8px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--fg);text-align:right;font-variant-numeric:tabular-nums}
+/* Hava: yer seçimi ve izin tarifi */
+.hsehir{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.hsehir small{color:var(--muted);font-size:12px}
+.hsehir button{font:600 12.5px var(--body);padding:5px 10px;border-radius:99px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.hyol{margin:0;font-size:13px;line-height:1.45;background:var(--ink-soft);color:var(--fg);padding:10px 12px;border-radius:10px}
 </style>
 
 <div class="wrap">
@@ -104,13 +166,15 @@ td{padding:7px 0;border-top:1px solid var(--line)}td:last-child{text-align:right
   <p class="sub">28 Ekim – 1 Kasım · Pendik'ten arabayla, 5 gün</p>
 </header>
 
+<div class="sirada" id="sirada" hidden aria-live="polite"></div>
+
 <div class="hava" id="hava" aria-live="polite">
   <button type="button" class="hbtn" id="havaBtn">📍 Konumumun hava durumunu göster</button>
 </div>
 
 <nav role="tablist">
   <button role="tab" id="tab-plan" aria-selected="true" data-p="plan">Program</button>
-  <button role="tab" id="tab-yakit" aria-selected="false" data-p="yakit">Benzin</button>
+  <button role="tab" id="tab-yakit" aria-selected="false" data-p="yakit">Bütçe</button>
   <button role="tab" id="tab-bavul" aria-selected="false" data-p="bavul">Bavul</button>
   <button role="tab" id="tab-ev" aria-selected="false" data-p="ev">Ev kontrol</button>
 </nav>
@@ -118,6 +182,9 @@ td{padding:7px 0;border-top:1px solid var(--line)}td:last-child{text-align:right
 <section id="plan" class="panel"></section>
 
 <section id="yakit" class="panel" hidden>
+  <div class="grup-kart"></div>
+  <div class="card" id="masraf"></div>
+  <div class="card" id="otoyol"></div>
   <div class="card">
     <h3>Kilometre sayacı</h3>
     <div class="grid">
@@ -138,7 +205,7 @@ td{padding:7px 0;border-top:1px solid var(--line)}td:last-child{text-align:right
     <p class="note">Değerler örnek. Kendi aracının tüketimini ve pompadaki güncel fiyatı yaz, bu cihazda hatırlanır.</p>
     <table id="etap"></table>
     <div class="tot"><span><span id="tkm"></span> km · <span id="tlt"></span> L</span><b id="ttl"></b></div>
-    <p class="note">Mesafeler yaklaşık. Otoyol ücretleri bu hesaba dahil değil.</p>
+    <p class="note">Mesafeler yaklaşık. Otoyol ücretleri yukarıdaki kartta.</p>
   </div>
 </section>
 
@@ -188,6 +255,8 @@ td{padding:7px 0;border-top:1px solid var(--line)}td:last-child{text-align:right
 </div>
 
 <script>
+const SYNC=window.SYNC={kod:null,yaz:null};
+const L=window.L={};
 const M=q=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q);
 /* Yakındaki benzinlik / otopark: durağın çevresinde arar */
 const NEAR=(what,q)=>M(what+" near "+q);
@@ -236,29 +305,166 @@ const DAYS=[
      ["19:15","Dorukkaya Green Park","Akşam yemeği · Gerede · hafta sonu 23:00'e kadar açık","Dorukkaya Green Park Gerede"],
      ["23:00","Eve varış","Gerede'den ~3 saat · Pazar akşamı İzmit–Gebze sıkışırsa Akyazı'dan Kuzey Marmara Otoyolu ile Kurtköy'e in (ücretli ama rahat) · yorulursan Düzce'de mola","Yayalar Pendik İstanbul"]]}];
 
-const today=new Date(Date.now()+3*3600e3).toISOString().slice(0,10);
+/* ---------- Ortak veri deposu: plan, masraf, telefonlar. Grup varsa Firebase ile eşitlenir. ---------- */
+const yeniId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+function depo(ad,varsayilan,ciz){
+  let items=null;try{const k=JSON.parse(localStorage.getItem("depo-"+ad));items=k&&k.items}catch(e){}
+  if(!items||typeof items!=="object")items=varsayilan();
+  const sakla=()=>{try{localStorage.setItem("depo-"+ad,JSON.stringify({items}))}catch(e){}};
+  const yaz=(d,tam)=>{sakla();if(SYNC.yaz)SYNC.yaz(ad,d,tam);ciz()};
+  return{
+    get items(){return items},
+    koy(id,v){items[id]=Object.assign(items[id]||{},v);yaz({[id]:v})},
+    sil(id){delete items[id];yaz({[id]:null})},
+    sifirla(){items=varsayilan();yaz(null,items)},
+    hepsi:()=>items,uzak(v){items=v&&typeof v==="object"?v:{};sakla();ciz()},yenile:()=>ciz()};
+}
+const el=(tag,cls,txt)=>{const x=document.createElement(tag);if(cls)x.className=cls;if(txt!=null)x.textContent=txt;return x};
+const link=(href,cls,txt)=>{const a=el("a",cls,txt);a.href=href;if(!href.startsWith("tel:")){a.target="_blank";a.rel="noopener"}return a};
+const NAV=q=>"https://www.google.com/maps/dir/?api=1&travelmode=driving&destination="+encodeURIComponent(q);
+const dk=t=>{if(!t)return null;const [h,m]=t.split(":").map(Number);return h*60+m};
+/* 05:00'ten önceki saatler gece yarısını geçmiş sayılır (ör. 02:00 kapanış) */
+const gece=m=>m!=null&&m<300?m+1440:m;
+const gunAdi=d=>{const g=DAYS.find(x=>x.d===d);return g?g.name:new Date(d+"T12:00:00").toLocaleDateString("tr-TR",{weekday:"long"})};
+const bugunStr=()=>{const n=new Date();return n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")+"-"+String(n.getDate()).padStart(2,"0")};
+const zamanOf=s=>{const d=new Date(s.d+"T"+(s.t||"00:00")+":00");if(dk(s.t)<300)d.setDate(d.getDate()+1);return d};
+
+/* Planın ilk hali: DAYS içindeki duraklar + bilinen açılış/kapanış saatleri */
+const SAATLER={"Zeynep Usta":{ac:"14:30"},"Katmerci Dayı":{kp:"02:00"},"Kaya Kebab":{kp:"21:00"},"Dorukkaya Green Park":{ac:"08:00",kp:"23:00"}};
+function planVarsayilan(){const o={};let k=1;
+  DAYS.forEach(g=>g.s.forEach(([t,n,s,q])=>{o["p"+k]=Object.assign({d:g.d,t,n,s:s||"",q:q||""},SAATLER[n]||{});k++}));return o}
+
+/* ---------- Program ---------- */
 const plan=document.getElementById("plan");
-{const qb=document.createElement("div");qb.className="quick";qb.innerHTML=`<p>Şu an yakınımda</p><div></div>`;
- const box=qb.querySelector("div");
- YAKIN.forEach(([l,w])=>{const a=document.createElement("a");a.href=HERE(w);a.target="_blank";a.rel="noopener";a.textContent=l;box.append(a)});
+let duzenle=false,acikForm=null;
+{const qb=el("div","quick");qb.append(el("p",null,"Şu an yakınımda"));const box=el("div");
+ YAKIN.forEach(([l,w])=>box.append(link(HERE(w),null,l)));
  /* Google nöbet listesini bilmez: eczaneler.gen.tr'nin il/ilçe sayfasına gider, konum hava kutusundan gelir */
- const nb=document.createElement("a");nb.id="nobetci";nb.href="https://www.eczaneler.gen.tr/";nb.target="_blank";nb.rel="noopener";nb.textContent="🌙 Nöbetçi eczane";box.append(nb);
- plan.append(qb)}
-DAYS.forEach(day=>{
-  const c=document.createElement("article");c.className="day"+(day.d===today?" today":"");
-  const dd=new Date(day.d+"T12:00:00").getDate();
-  c.innerHTML=`<div class="dhead"><h2>${day.name} ${dd}</h2><span class="tag">${day.d===today?"Bugün":day.tag}</span></div><p class="wx">${day.wx}</p>`;
-  if(day.route){const a=document.createElement("a");a.className="cta";a.href=day.route;a.target="_blank";a.rel="noopener";a.textContent="Tüm rotayı Google Maps'te aç";c.append(a)}
-  const ol=document.createElement("ol");
-  day.s.forEach(([t,n,s,q])=>{const li=document.createElement("li");li.className="stop";
-    li.innerHTML=`<span class="t">${t}</span><span class="n"><b></b><small></small></span>`;
-    li.querySelector("b").textContent=n;li.querySelector("small").textContent=s;
-    if(q){const nr=document.createElement("span");nr.className="near";
-      YAKIN.forEach(([l,w])=>{const x=document.createElement("a");x.href=NEAR(w,q);x.target="_blank";x.rel="noopener";x.textContent=l;nr.append(x)});
-      li.querySelector(".n").append(nr)}
-    if(q){const a=document.createElement("a");a.className="go";a.href=M(q);a.target="_blank";a.rel="noopener";a.textContent="Git";li.append(a)}else li.append(document.createElement("span"));
-    ol.append(li)});
-  c.append(ol);plan.append(c)});
+ const nb=link("https://www.eczaneler.gen.tr/",null,"🌙 Nöbetçi eczane");nb.id="nobetci";box.append(nb);
+ qb.append(box);plan.append(qb)}
+const acil=el("details","card acil");plan.append(acil);
+const pbar=el("div","pbar");plan.append(pbar);
+const gunler=el("div","gunler");plan.append(gunler);
+
+function saatRozeti(s){
+  if(!s.ac&&!s.kp)return null;
+  const ac=dk(s.ac),kp=gece(dk(s.kp)),plan_=gece(dk(s.t));
+  const r=el("span","rozet");
+  if(s.d===bugunStr()){const n=new Date();let simdi=n.getHours()*60+n.getMinutes();if(simdi<300)simdi+=1440;
+    if(ac!=null&&simdi<ac){r.classList.add("kirmizi");r.textContent=`Şu an kapalı · ${s.ac}'da açılır`}
+    else if(kp!=null&&simdi>=kp){r.classList.add("kirmizi");r.textContent=`Şu an kapalı · ${s.kp}'da kapandı`}
+    else if(kp!=null&&kp-simdi<=60){r.classList.add("sari");r.textContent=`Kapanmasına ${kp-simdi} dk · ${s.kp}`}
+    else{r.classList.add("yesil");r.textContent="Şu an açık"+(s.kp?` · ${s.kp}'da kapanır`:"")}
+    return r}
+  if(ac!=null&&plan_<ac){r.classList.add("sari");r.textContent=`⚠ ${s.ac}'da açılıyor, plan saati erken`}
+  else if(kp!=null&&plan_>=kp){r.classList.add("kirmizi");r.textContent=`⚠ ${s.kp}'da kapanıyor, plan saati geç`}
+  else if(kp!=null&&kp-plan_<=60){r.classList.add("sari");r.textContent=`${s.kp}'da kapanıyor, vaktin az`}
+  else r.textContent="🕘 "+[s.ac||"…",s.kp||"…"].join("–");
+  return r}
+
+function durakFormu(id,d,ol){
+  const s=id?P.items[id]:{d,t:"",n:"",s:"",q:"",ac:"",kp:""};
+  const f=el("form","dform");
+  const alan=(lbl,name,type,ph)=>{const l=el("label",null,lbl);const i=el("input");i.name=name;i.type=type;i.value=s[name]||"";if(ph)i.placeholder=ph;l.append(i);return l};
+  f.append(alan("Saat","t","time"),alan("Yer adı","n","text","örn. Kaya Kebab"),alan("Not","s","text","isteğe bağlı"),
+    alan("Haritada arama","q","text","örn. Kaya Kebab Adana"),alan("Açılış","ac","time"),alan("Kapanış","kp","time"));
+  const b=el("div","dbtn");const ok=el("button","ana","Kaydet");ok.type="submit";const ip=el("button",null,"Vazgeç");ip.type="button";
+  ip.onclick=()=>{acikForm=null;planCiz()};b.append(ok,ip);f.append(b);
+  f.onsubmit=e=>{e.preventDefault();const v=Object.fromEntries(new FormData(f));v.n=v.n.trim();if(!v.n||!v.t)return alert("Saat ve yer adı gerekli.");
+    if(!v.q)v.q=v.n;acikForm=null;P.koy(id||yeniId(),Object.assign(v,{d}))};
+  return f}
+
+function planCiz(){
+  gunler.textContent="";pbar.textContent="";
+  const db=el("button",duzenle?"ana":"",duzenle?"✓ Düzenlemeyi bitir":"✏️ Planı düzenle");db.type="button";
+  db.onclick=()=>{duzenle=!duzenle;acikForm=null;planCiz()};pbar.append(db);
+  if(duzenle){const r=el("button",null,"Planı baştan yükle");r.type="button";
+    r.onclick=()=>{if(confirm("Plan ilk haline dönsün mü? Eklediğin ve değiştirdiğin duraklar silinir."))P.sifirla()};pbar.append(r)}
+  const bugun=bugunStr();
+  const tum=Object.entries(P.items).filter(([,s])=>s&&s.d&&s.n);
+  DAYS.forEach(day=>{
+    const c=el("article","day"+(day.d===bugun?" today":""));
+    const h=el("div","dhead");h.append(el("h2",null,day.name+" "+new Date(day.d+"T12:00:00").getDate()),el("span","tag",day.d===bugun?"Bugün":day.tag));
+    c.append(h,el("p","wx",day.wx));
+    if(day.route)c.append(link(day.route,"cta","Tüm rotayı Google Maps'te aç"));
+    const ol=el("ol");
+    tum.filter(([,s])=>s.d===day.d).sort((a,b)=>gece(dk(a[1].t))-gece(dk(b[1].t))).forEach(([id,s])=>{
+      const li=el("li","stop");
+      if(acikForm===id){li.classList.add("edit");li.append(durakFormu(id,day.d));ol.append(li);return}
+      const n=el("span","n");n.append(el("b",null,s.n));if(s.s)n.append(el("small",null,s.s));
+      const r=saatRozeti(s);if(r)n.append(r);
+      if(s.q&&!duzenle){const nr=el("span","near");YAKIN.forEach(([l,w])=>nr.append(link(NEAR(w,s.q),null,l)));n.append(nr)}
+      li.append(el("span","t",s.t),n);
+      if(duzenle){const x=el("span","dact");const e=el("button",null,"✎");e.type="button";e.setAttribute("aria-label",s.n+" düzenle");
+        e.onclick=()=>{acikForm=id;planCiz()};
+        const d=el("button",null,"×");d.type="button";d.setAttribute("aria-label",s.n+" sil");
+        d.onclick=()=>{if(confirm(s.n+" plandan silinsin mi?"))P.sil(id)};x.append(e,d);li.append(x)}
+      else li.append(s.q?link(M(s.q),"go","Git"):el("span"));
+      ol.append(li)});
+    if(acikForm==="yeni-"+day.d){const li=el("li","stop edit");li.append(durakFormu(null,day.d));ol.append(li)}
+    else if(duzenle){const li=el("li","stop ekle");const b=el("button",null,"+ Durak ekle");b.type="button";
+      b.onclick=()=>{acikForm="yeni-"+day.d;planCiz()};li.append(b);ol.append(li)}
+    c.append(ol);gunler.append(c)});
+  siradaCiz();
+}
+
+/* ---------- Sıradaki durak (en üstte) ---------- */
+const sirada=document.getElementById("sirada");
+function sure(ms){const m=Math.round(ms/60000);if(m<60)return m+" dk";const h=Math.floor(m/60),r=m%60;if(h<24)return h+" sa"+(r?" "+r+" dk":"");const g=Math.floor(h/24);return g+" gün"+(h%24?" "+(h%24)+" sa":"")}
+function siradaCiz(){
+  const now=Date.now();
+  const list=Object.values(P.items).filter(s=>s&&s.d&&s.t&&s.n).map(s=>({s,z:zamanOf(s).getTime()})).sort((a,b)=>a.z-b.z);
+  if(!list.length||now>list[list.length-1].z+3*3600e3){sirada.hidden=true;return}
+  /* 20 dakika öncesine kadar başlamış durak "şimdi" sayılır */
+  const i=list.findIndex(x=>x.z>=now-20*60e3);if(i<0){sirada.hidden=true;return}
+  const {s,z}=list[i],fark=z-now;
+  sirada.hidden=false;sirada.textContent="";
+  const ust=el("div","sust");
+  ust.append(el("span","setk",fark<=0?"Şimdi":i===0&&fark>12*3600e3?"Gezinin ilk durağı":"Sıradaki durak"),
+    el("span","ssay",fark<=0?"başladı":sure(fark)+" sonra"));
+  const ad=el("div","sad");ad.append(el("b",null,s.n),el("small",null,gunAdi(s.d)+" "+s.t+(s.s?" · "+s.s:"")));
+  const r=saatRozeti(s);if(r)ad.append(r);
+  sirada.append(ust,ad);
+  const b=el("div","sbtn");
+  if(s.q){b.append(link(NAV(s.q),"ana","➜ Yol tarifi"),link(M(s.q),null,"📍 Haritada"))}
+  const sonra=list[i+1];if(sonra)b.append(el("small","ssonra","Sonra: "+sonra.s.t+" "+sonra.s.n));
+  sirada.append(b);
+}
+setInterval(()=>{siradaCiz();if(Object.values(P.items).some(s=>s.d===bugunStr()&&(s.ac||s.kp))&&!acikForm)planCiz()},60000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)siradaCiz()});
+
+/* ---------- Acil durum ve telefonlar ---------- */
+function telVarsayilan(){return{
+  t1:{n:"Kasko / yol yardım",no:"",q:"",s:1},
+  t2:{n:"Golden Lake Hotel",no:"",q:"Golden Lake Hotel Adana",s:2},
+  t3:{n:"Kapadokya oteli",no:"",q:"",s:3}}}
+function telCiz(){
+  const acik=acil.open;acil.textContent="";acil.open=acik;
+  acil.append(el("summary",null,"📞 Acil durum ve telefonlar"));
+  const k=el("div","tlist");
+  const sat=(ad,no,alt)=>{const r=el("div","trow");const a=el("div","tad");a.append(el("b",null,ad));if(alt)a.append(el("small",null,alt));r.append(a);
+    if(no)r.append(link("tel:"+no.replace(/[^\d+]/g,""),"tara","📞 "+no));return r};
+  k.append(sat("112 Acil","112","Ambulans, polis, jandarma, itfaiye"));
+  Object.entries(TEL.items).filter(([,x])=>x&&x.n).sort((a,b)=>(a[1].s||0)-(b[1].s||0)).forEach(([id,x])=>{
+    const r=sat(x.n,x.no,x.no?"":"Numara henüz yok");
+    if(!x.no){const f=el("form","tno");const i=el("input");i.type="tel";i.placeholder="Numara";i.setAttribute("aria-label",x.n+" numarası");
+      const b=el("button",null,"Kaydet");b.type="submit";f.append(i,b);
+      f.onsubmit=e=>{e.preventDefault();const v=i.value.trim();if(v)TEL.koy(id,{no:v})};r.append(f);
+      if(x.q)r.append(link(M(x.q),"tbul","🔎 Numarayı haritada bul"))}
+    const d=el("button","del","×");d.type="button";d.setAttribute("aria-label",x.n+" sil");
+    d.onclick=()=>{if(confirm(x.n+" silinsin mi?"))TEL.sil(id)};r.append(d);
+    k.append(r)});
+  const f=el("form","add");const a=el("input");a.placeholder="Kişi / yer";a.setAttribute("aria-label","Yeni kişi adı");
+  const n=el("input");n.type="tel";n.placeholder="Numara";n.setAttribute("aria-label","Yeni numara");
+  const b=el("button",null,"Ekle");b.type="submit";f.append(a,n,b);
+  f.onsubmit=e=>{e.preventDefault();if(!a.value.trim())return;TEL.koy(yeniId(),{n:a.value.trim(),no:n.value.trim(),q:"",s:Date.now()})};
+  k.append(f);acil.append(k);
+}
+
+/* ---------- Depolar ---------- */
+const P=L.plan=depo("plan",planVarsayilan,()=>planCiz());
+const TEL=L.telefon=depo("telefon",telVarsayilan,()=>telCiz());
+planCiz();telCiz();
 const t=plan.querySelector(".today");if(t)setTimeout(()=>t.scrollIntoView({block:"start"}),0);
 
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
@@ -273,7 +479,7 @@ const tl=n=>n.toLocaleString("tr-TR",{maximumFractionDigits:0})+" ₺";
 function hesap(){const k=+tu.value||0,p=+fi.value||0;let km=0;
   document.getElementById("etap").innerHTML=ETAP.map(([n,d])=>{km+=d;return`<tr><td>${n}<br><small style="color:var(--muted)">${d} km · ${(d*k/100).toFixed(1)} L</small></td><td>${tl(d*k/100*p)}</td></tr>`}).join("");
   const L=km*k/100;document.getElementById("tkm").textContent=km.toLocaleString("tr-TR");
-  document.getElementById("tlt").textContent=L.toFixed(0);document.getElementById("ttl").textContent=tl(L*p);
+  document.getElementById("tlt").textContent=L.toFixed(0);document.getElementById("ttl").textContent=tl(L*p);document.getElementById("ttl").dataset.v=L*p;if(window.masrafHazir)yolOzet();
   try{localStorage.setItem("yakit",JSON.stringify({t:tu.value,f:fi.value}))}catch(e){}
   gercek();}
 const kb=document.getElementById("kmBas"),ks=document.getElementById("kmSon"),lt=document.getElementById("litre");
@@ -294,10 +500,81 @@ async function kmKaydet(){const v={bas:kb.value,son:ks.value,litre:lt.value};
   kmYaz=false;if(kmTekrar){kmTekrar=false;kmKaydet()}}
 [kb,ks,lt].forEach(i=>{i.oninput=gercek;i.onchange=kmKaydet});
 tu.oninput=fi.oninput=hesap;hesap();
+/* ---------- Bütçe: masraflar (grupla ortak) + otoyol tahmini (bu cihazda) ---------- */
+const KATEGORI=[["yemek","🍽️ Yemek"],["otel","🏨 Otel"],["benzin","⛽ Benzin"],["otoyol","🛣️ Otoyol / köprü"],["giris","🎟️ Müze / giriş"],["hediye","🎁 Hediyelik"],["diger","📦 Diğer"]];
+const katAd=k=>(KATEGORI.find(x=>x[0]===k)||KATEGORI[6])[1];
+const para=n=>(Math.round(n)||0).toLocaleString("tr-TR")+" ₺";
+const masrafKart=document.getElementById("masraf");
+const MAS=L.masraf=depo("masraf",()=>({}),()=>masrafCiz());
+function masrafCiz(){
+  masrafKart.textContent="";
+  const liste=Object.entries(MAS.items).filter(([,x])=>x&&+x.tl>0).sort((a,b)=>(b[1].s||0)-(a[1].s||0));
+  const top=liste.reduce((a,[,x])=>a+ +x.tl,0);
+  const h=el("div","phead");h.append(el("h3",null,"Masraflar"),el("b","pct mas",para(top)));masrafKart.append(h);
+  /* Ekleme formu */
+  const f=el("form","mform");
+  const gun=el("select");gun.setAttribute("aria-label","Gün");
+  const bug=bugunStr();
+  DAYS.forEach(d=>{const o=el("option",null,d.name+" "+new Date(d.d+"T12:00:00").getDate());o.value=d.d;gun.append(o)});
+  {const o=el("option",null,"Gezi dışı");o.value="diger";gun.append(o)}
+  gun.value=DAYS.some(d=>d.d===bug)?bug:(Date.now()<new Date(DAYS[0].d).getTime()?DAYS[0].d:"diger");
+  const kat=el("select");kat.setAttribute("aria-label","Kategori");KATEGORI.forEach(([k,a])=>{const o=el("option",null,a);o.value=k;kat.append(o)});
+  const tl=el("input");tl.type="number";tl.inputMode="decimal";tl.min="0";tl.step="0.01";tl.placeholder="Tutar ₺";tl.setAttribute("aria-label","Tutar");
+  const not=el("input");not.placeholder="Not (isteğe bağlı)";not.maxLength=60;not.setAttribute("aria-label","Not");
+  const b=el("button","ana","Ekle");b.type="submit";
+  f.append(gun,kat,tl,not,b);
+  f.onsubmit=e=>{e.preventDefault();const v=+String(tl.value).replace(",",".");if(!(v>0))return tl.focus();
+    MAS.koy(yeniId(),{g:gun.value,k:kat.value,tl:Math.round(v*100)/100,n:not.value.trim(),s:Date.now()})};
+  masrafKart.append(f);
+  if(!liste.length){masrafKart.append(el("p","note","Harcadıkça buraya ekle. Gün gün ve kategori kategori toplamı görürsün."+(SYNC.kod?" Grupla ortak.":"")));yolOzet();return}
+  /* Kategori özeti */
+  const ks=el("div","kat");const kt={};liste.forEach(([,x])=>kt[x.k]=(kt[x.k]||0)+ +x.tl);
+  Object.entries(kt).sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>{const r=el("div","krow");r.append(el("span",null,katAd(k)),el("b",null,para(v)));
+    const bar=el("i");bar.style.width=(v/top*100)+"%";const bb=el("div","kbar");bb.append(bar);r.append(bb);ks.append(r)});
+  masrafKart.append(ks);
+  /* Gün gün */
+  [...DAYS.map(d=>d.d),"diger"].forEach(g=>{const ic=liste.filter(([,x])=>(x.g||"diger")===g);if(!ic.length)return;
+    const det=el("details","mgun");const sm=el("summary");const gt=ic.reduce((a,[,x])=>a+ +x.tl,0);
+    sm.append(el("span",null,g==="diger"?"Gezi dışı":gunAdi(g)+" "+new Date(g+"T12:00:00").getDate()),el("b",null,para(gt)));det.append(sm);
+    if(g===bug)det.open=true;
+    ic.forEach(([id,x])=>{const r=el("div","mrow");const a=el("span");a.append(el("span",null,katAd(x.k)));if(x.n)a.append(el("small",null," · "+x.n));
+      const d=el("button","del","×");d.type="button";d.setAttribute("aria-label","Masrafı sil");d.onclick=()=>{if(confirm(para(x.tl)+" silinsin mi?"))MAS.sil(id)};
+      r.append(a,el("b",null,para(x.tl)),d);det.append(r)});
+    masrafKart.append(det)});
+  masrafKart.append(el("p","note",SYNC.kod?"👥 Masraflar grupla ortak.":"Masraflar bu cihazda saklanır. Grup kurarsan eşinle ortak olur."));
+  yolOzet();
+}
+
+/* Otoyol ve köprü: tahmini ücretler, düzenlenebilir */
+const OTOYOL=[["Pendik → Ankara (Anadolu Otoyolu)",338],["Ankara → Niğde Otoyolu",420],["Niğde → Pozantı → Adana",null],["Adana → Kapadokya otoyol kısmı",null],["Ankara → Pendik (Anadolu Otoyolu)",338],["Kuzey Marmara (dönüşte kullanırsan)",null]];
+const otoyolKart=document.getElementById("otoyol");
+let oty={};try{oty=JSON.parse(localStorage.getItem("otoyol"))||{}}catch(e){}
+function otoyolCiz(){
+  otoyolKart.textContent="";otoyolKart.append(el("h3",null,"Otoyol ve köprü"));
+  const tb=el("div","oty");let top=0,eksik=0;
+  OTOYOL.forEach(([ad,v],i)=>{const val=oty[i]!==undefined?oty[i]:v;if(val>0)top+=+val;else eksik++;
+    const r=el("label","orow");r.append(el("span",null,ad));const inp=el("input");inp.type="number";inp.inputMode="numeric";inp.min="0";inp.placeholder="? ₺";
+    inp.value=val==null||val===""?"":val;inp.setAttribute("aria-label",ad+" ücreti");
+    inp.onchange=()=>{oty[i]=inp.value===""?"":+inp.value;try{localStorage.setItem("otoyol",JSON.stringify(oty))}catch(e){}otoyolCiz();yolOzet()};
+    r.append(inp);tb.append(r)});
+  otoyolKart.append(tb);
+  const t=el("div","tot");t.append(el("span",null,"Toplam"+(eksik?` (${eksik} kalem boş)`:"")),el("b",null,para(top)));otoyolKart.append(t);
+  otoyolKart.append(el("p","note","Rakamlar 2026 için internetteki tahminler, resmi tarife değil. Boş kalemleri HGS uygulamasından ya da gişeden öğrenip yaz; bu cihazda saklanır."));
+  return top;
+}
+function otoyolTop(){return OTOYOL.reduce((a,[,v],i)=>{const x=oty[i]!==undefined?oty[i]:v;return a+(x>0?+x:0)},0)}
+/* Masraf kartının altında: plana göre yol maliyeti tahmini */
+function yolOzet(){
+  let k=masrafKart.querySelector(".yozet");if(k)k.remove();
+  const benzin=+(document.getElementById("ttl")?.dataset.v||0),oy=otoyolTop();
+  k=el("div","yozet");k.append(el("span",null,`Yol tahmini: benzin ${para(benzin)} + otoyol ${para(oy)}`),el("b",null,para(benzin+oy)));
+  masrafKart.append(k);
+}
+otoyolCiz();masrafCiz();
+
+window.masrafHazir=true;yolOzet();
 
 /* Yazılabilir kontrol listeleri: eşyaları kullanıcı yazar, bu cihazda saklanır. */
-/* Ortak liste durumu. Firebase modülü bağlanınca yaz() ve kod dolar. */
-const SYNC=window.SYNC={kod:null,yaz:null};
 /* Yazılabilir kontrol listeleri. Her madde kimlikle saklanır: {id:{t,b,ok,s}}.
    Böylece iki kişi aynı anda işaretleyince birbirinin değişikliğini ezmez. */
 function kontrolListesi({ad,bolumler,bos,varsayilan,ekle=true}){
@@ -350,7 +627,6 @@ function kontrolListesi({ad,bolumler,bos,varsayilan,ekle=true}){
 }
 /* Eski sürümde bu cihaza kaydedilen bavul listesi varsa taşı */
 try{const eski=localStorage.getItem("bavul2");if(eski&&!localStorage.getItem("liste-bavul"))localStorage.setItem("liste-bavul",eski)}catch(e){}
-const L=window.L={};
 L.bavul=kontrolListesi({ad:"bavul",bolumler:["Giyim","Ayakkabı","Yol","Kişisel bakım","Özel eşya"],bos:"Her bölüme götüreceklerini yaz."});
 L.ev=kontrolListesi({ad:"ev",bolumler:[""],bos:"Evden çıkarken kontrol edeceklerini yaz."});
 L.bavulOneri=kontrolListesi({ad:"bavulOneri",ekle:false,bos:"Liste boş. Aşağıdan önerilen listeyi baştan yükleyebilirsin.",
@@ -415,43 +691,69 @@ function goster(v,not){
     ["Yağmur",(d.precipitation_probability_max[0]??"—")+"%"],["Rüzgâr",Math.round(c.wind_speed_10m)+" km/sa"],["Gün batımı",saat(d.sunset[0])]];
   const hm=box.querySelector(".hmeta");m.forEach(([k,x])=>{const sp=document.createElement("span");sp.append(k+" ");const b=document.createElement("b");b.textContent=x;sp.append(b);hm.append(sp)});
   box.querySelector(".hfoot span").textContent=not||(yas<1?"Az önce güncellendi":yas<60?yas+" dk önce güncellendi":"Son güncelleme "+new Date(v.t).toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"}));
-  box.querySelector(".hfoot button").onclick=()=>al(true);
+  box.querySelector(".hfoot button").onclick=()=>v.sabit?sec(v.sabit):al(true);
+  box.append(sehirler());
   nobetci(v);
 }
-function butonGoster(mesaj){
-  box.innerHTML="";if(mesaj){const p=document.createElement("small");p.style.color="var(--muted)";p.textContent=mesaj;box.append(p)}
-  const b=document.createElement("button");b.type="button";b.className="hbtn";b.textContent="📍 Konumumun hava durumunu göster";b.onclick=()=>al(true);box.append(b);
+/* Konum izni yoksa gezi yerlerinden biri seçilebilir */
+const SEHIR=[["Pendik",40.877,29.258,"Pendik","İstanbul"],["Adana",37.0,35.32,"Seyhan","Adana"],["Göreme",38.643,34.828,"Nevşehir Merkez","Nevşehir"],["Hacıbektaş",38.94,34.558,"Hacıbektaş","Nevşehir"]];
+function sehirler(){
+  const s=document.createElement("div");s.className="hsehir";
+  const lb=document.createElement("small");lb.textContent="ya da yer seç:";s.append(lb);
+  {const b=document.createElement("button");b.type="button";b.textContent="📍 Konumum";b.onclick=()=>al(true);s.append(b)}
+  SEHIR.forEach(x=>{const b=document.createElement("button");b.type="button";b.textContent=x[0];b.onclick=()=>sec(x[0]);s.append(b)});
+  return s}
+function butonGoster(mesaj,engelli){
+  box.innerHTML="";
+  if(mesaj){const p=document.createElement("small");p.style.color="var(--muted)";p.textContent=mesaj;box.append(p)}
+  if(engelli){const p=document.createElement("p");p.className="hyol";
+    p.textContent="Konum izni daha önce engellenmiş, tarayıcı tekrar sormuyor. Açmak için: adres çubuğundaki 🔒 ya da ⓘ simgesine dokun → İzinler (Site ayarları) → Konum → İzin ver. İzni açtığın anda hava kendiliğinden gelir.";box.append(p)}
+  else{const b=document.createElement("button");b.type="button";b.className="hbtn";b.textContent="📍 Konumumun hava durumunu göster";b.onclick=()=>al(true);box.append(b)}
+  box.append(sehirler());
 }
 let calisiyor=false;
+async function getir(la,lo,sabit){
+  const eski=oku();
+  try{
+    const u="https://api.open-meteo.com/v1/forecast?latitude="+la.toFixed(3)+"&longitude="+lo.toFixed(3)+
+      "&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,is_day&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunset&forecast_days=1&timezone=auto";
+    const w=await (await fetch(u)).json();if(!w.current)throw 0;
+    let yer="",il="",ilce="";
+    if(sabit){const x=SEHIR.find(s=>s[0]===sabit);yer=x[0]+", "+x[4];ilce=x[3];il=x[4]}
+    else{const yakin=eski&&!eski.sabit&&eski.il&&Math.abs(eski.la-la)<0.02&&Math.abs(eski.lo-lo)<0.02;
+      if(yakin){yer=eski.yer;il=eski.il;ilce=eski.ilce}
+      else{try{const r=await (await fetch("https://nominatim.openstreetmap.org/reverse?format=json&zoom=12&accept-language=tr&lat="+la.toFixed(3)+"&lon="+lo.toFixed(3))).json();
+        const a=r.address||{};il=a.province||a.state||a.city||"";ilce=a.town||a.county||"";
+        yer=[ilce,il].filter(Boolean).filter((x,i,arr)=>arr.indexOf(x)===i).join(", ")}catch(e){}}}
+    const v={t:Date.now(),la,lo,yer,il,ilce,w,sabit:sabit||null};yaz(v);goster(v);
+  }catch(e){eski?goster(eski,"İnternet yok, son bilinen hava gösteriliyor"):butonGoster("Hava durumu alınamadı, internet bağlantını kontrol et.")}
+}
+function sec(ad){const x=SEHIR.find(s=>s[0]===ad);if(!x)return;const eski=oku();
+  if(eski)goster(eski,"Güncelleniyor…");else box.innerHTML='<small style="color:var(--muted)">Hava alınıyor…</small>';
+  getir(x[1],x[2],ad)}
 function al(elle){
   if(calisiyor)return;
   if(!("geolocation" in navigator))return butonGoster("Bu tarayıcı konum vermiyor.");
   calisiyor=true;const eski=oku();
-  if(eski)goster(eski,"Güncelleniyor…");else box.innerHTML='<small style="color:var(--muted)">Konum alınıyor…</small>';
+  if(eski)goster(eski,"Konum alınıyor…");else box.innerHTML='<small style="color:var(--muted)">Konum alınıyor… Tarayıcı izin sorarsa "İzin ver"e dokun.</small>';
   navigator.geolocation.getCurrentPosition(async pos=>{
-    const {latitude:la,longitude:lo}=pos.coords;
-    try{
-      const u="https://api.open-meteo.com/v1/forecast?latitude="+la.toFixed(3)+"&longitude="+lo.toFixed(3)+
-        "&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,is_day&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunset&forecast_days=1&timezone=auto";
-      const w=await (await fetch(u)).json();if(!w.current)throw 0;
-      const yakin=eski&&eski.il&&Math.abs(eski.la-la)<0.02&&Math.abs(eski.lo-lo)<0.02;
-      let yer=yakin?eski.yer:"",il=yakin?eski.il:"",ilce=yakin?eski.ilce:"";
-      if(!il){try{const r=await (await fetch("https://nominatim.openstreetmap.org/reverse?format=json&zoom=12&accept-language=tr&lat="+la.toFixed(3)+"&lon="+lo.toFixed(3))).json();
-        const a=r.address||{};il=a.province||a.state||a.city||"";ilce=a.town||a.county||"";
-        yer=[ilce,il].filter(Boolean).filter((x,i,arr)=>arr.indexOf(x)===i).join(", ")}catch(e){}}
-      const v={t:Date.now(),la,lo,yer,il,ilce,w};yaz(v);goster(v);
-    }catch(e){eski?goster(eski,"İnternet yok, son bilinen hava gösteriliyor"):butonGoster("Hava durumu alınamadı, internet bağlantını kontrol et.")}
-    calisiyor=false;
+    await getir(pos.coords.latitude,pos.coords.longitude,null);calisiyor=false;
   },err=>{calisiyor=false;
-    const m=err.code===1?"Konum izni verilmedi. Tarayıcı ayarlarından bu siteye konum izni ver.":"Konum alınamadı, tekrar dene.";
-    eski?goster(eski,m):butonGoster(m)},{enableHighAccuracy:false,timeout:15000,maximumAge:600000});
+    if(err.code===1)butonGoster(null,true);
+    else eski?goster(eski,"Konum alınamadı, tekrar dene."):butonGoster("Konum alınamadı, tekrar dene.")},
+  {enableHighAccuracy:false,timeout:15000,maximumAge:600000});
 }
 document.getElementById("havaBtn").onclick=()=>al(true);
 const eski=oku();if(eski)goster(eski);
-/* İzin daha önce verildiyse sormadan güncelle */
-navigator.permissions?.query({name:"geolocation"}).then(p=>{if(p.state==="granted")al(false)}).catch(()=>{});
+/* İzin verilmişse sormadan güncelle; izin sonradan açılırsa da hemen güncelle */
+navigator.permissions?.query({name:"geolocation"}).then(p=>{
+  const kontrol=()=>{const v=oku();if(p.state==="granted"){if(!v||!v.sabit)al(false)}else if(p.state==="denied"&&!v)butonGoster(null,true)};
+  kontrol();p.onchange=()=>{if(p.state==="granted")al(false);else kontrol()};
+}).catch(()=>{});
 /* Sayfa açık kaldıkça 15 dakikada bir, sekmeye dönünce de güncelle */
-const tazele=()=>{const v=oku();if(v&&Date.now()-v.t>15*60000&&!document.hidden)navigator.permissions?.query({name:"geolocation"}).then(p=>{if(p.state==="granted")al(false)}).catch(()=>{})};
+const tazele=()=>{const v=oku();if(!v||Date.now()-v.t<15*60000||document.hidden)return;
+  if(v.sabit)return sec(v.sabit);
+  navigator.permissions?.query({name:"geolocation"}).then(p=>{if(p.state==="granted")al(false)}).catch(()=>{})};
 setInterval(tazele,60000);document.addEventListener("visibilitychange",tazele);
 })();
 </script>
