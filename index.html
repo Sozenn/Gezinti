@@ -105,7 +105,11 @@ td{padding:7px 0;border-top:1px solid var(--line)}td:last-child{text-align:right
 .sbtn{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .sbtn a{font:600 15px var(--body);text-decoration:none;padding:11px 16px;border-radius:10px;background:rgba(255,255,255,.16);color:#fff}
 .sbtn a.ana{background:#fff;color:var(--ink);flex:1;text-align:center;min-width:140px}
-.scik{font-size:14px;font-weight:600;background:rgba(255,255,255,.14);padding:8px 10px;border-radius:10px}
+.scik{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:14px;font-weight:600;background:rgba(255,255,255,.14);padding:8px 10px;border-radius:10px}
+.scik button{flex:none;font:600 12.5px var(--body);padding:6px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;cursor:pointer}
+.vchip{align-self:flex-start;margin-top:5px;font:600 12.5px var(--body);padding:5px 10px;border-radius:99px;border:1px solid #3fa66a;background:transparent;color:#2f7d4f;cursor:pointer}
+.vchip.geri{border-color:var(--line);color:var(--muted)}
+.n{display:flex;flex-direction:column}.n>.rozet{align-self:flex-start}
 .go.cik{color:var(--muted);background:var(--ink-soft)}
 .dcik{grid-column:1/-1;flex-direction:row!important;align-items:center;gap:8px!important;color:var(--fg)!important;font-size:14px!important}
 .dcik input{width:20px!important;height:20px;flex:none;accent-color:var(--ink)}
@@ -473,6 +477,9 @@ function planCiz(){
       if(acikForm===id){li.classList.add("edit");li.append(durakFormu(id,day.d));ol.append(li);return}
       const n=el("span","n");n.append(el("b",null,s.n));if(s.s)n.append(el("small",null,s.s));
       const r=saatRozeti(s);if(r)n.append(r);
+      /* Bugünün duraklarında: istediğin durakta "vardım" ya da işareti geri al */
+      if(!duz&&day.d===bugun&&!cikisMi(s)){const vb=el("button","vchip"+(s.v?" geri":""),s.v?"↶ Vardım işaretini kaldır":"✓ Vardım");vb.type="button";
+        vb.onclick=()=>s.v?varisGeriAl(id):varis(id);n.append(vb)}
       if(s.q&&!duz){const nr=el("span","near");YAKIN.forEach(([l,w])=>nr.append(link(NEAR(w,s.q),null,l)));n.append(nr)}
       li.append(el("span","t",s.t),n);
       if(duz){const x=el("span","dact");const e=el("button",null,"✎");e.type="button";e.setAttribute("aria-label",s.n+" düzenle");
@@ -512,11 +519,18 @@ function siradaCiz(){
   ust.append(el("span","setk",gec>10?"Gecikmeli":fark<=0?"Şimdi":cik?"İlk mola":"Sıradaki durak"),
     el("span","ssay",gec>10?gec+" dk geride":fark<=0?"varış saati":sure(fark)+" sonra"));
   sirada.append(ust);
-  if(cik){const cf=cik.z-now;sirada.append(el("div","scik","🚗 Yola çıkış "+cik.s.t+" · "+cik.s.n+(cf>0?" · "+sure(cf)+" sonra":" · şimdi")))}
+  if(cik){const cf=cik.z-now,row=el("div","scik");
+    row.append(el("span",null,"🚗 Yola çıkış "+cik.s.t+" · "+cik.s.n+(cf>0?" · "+sure(cf)+" sonra":" · şimdi")));
+    /* Çıkış saati değişirse günün bütün durakları aynı farkla kayar */
+    const db=el("button",null,"Değiştir");db.type="button";
+    db.onclick=()=>{const v=prompt("Yeni yola çıkış saati (örn. 06:15). Günün bütün durakları aynı farkla kayar.",cik.s.t);if(v===null)return;
+      const m=v.trim().match(/^(\d{1,2})[:.]?(\d{2})$/);if(!m||+m[1]>23||+m[2]>59)return alert("Saati 06:15 gibi yaz.");
+      const d=gece(+m[1]*60+ +m[2])-gece(dk(cik.s.t));if(d)kaydirGun(cik.s.d,cik.z,d)};
+    row.append(db);sirada.append(row)}
   /* Sürüş molası: önceki duraktan bu yana 2 saati geçtiyse ve sıradaki mola hâlâ uzaktaysa uyar */
   const once=list.slice(0,i).filter(x=>x.z<=now).pop();
   if(once&&!cik){const bas=once.s.ay||once.s.v||once.z,yol=now-bas;
-    if(yol>=2*3600e3&&fark>20*60e3&&yol<8*3600e3){const m=el("div","smola");m.append(el("span",null,"☕ "+sure(yol)+"dır yoldasın. Yorgunsan mola ver."),link(HERE("dinlenme tesisi"),null,"En yakın tesis →"));sirada.append(m)}}
+    if(yol>=2*3600e3&&fark>20*60e3&&yol<8*3600e3){const m=el("div","smola");m.append(el("span",null,"☕ Son moladan beri "+sure(yol)+" geçti. Yorgunsan mola ver."),link(HERE("dinlenme tesisi"),null,"En yakın tesis →"));sirada.append(m)}}
   const ad=el("div","sad");ad.append(el("b",null,s.n),el("small",null,gunAdi(s.d)+" "+s.t+(s.s?" · "+s.s:"")));
   const r=saatRozeti(s);if(r)ad.append(r);
   sirada.append(ad);
@@ -539,8 +553,13 @@ function siradaCiz(){
 const saatEkle=(t,d)=>{let m=(dk(t)+d)%1440;if(m<0)m+=1440;return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0")};
 function sonKaydirma(){try{const x=JSON.parse(localStorage.getItem("sonKaydirma"));return x&&Date.now()-x.t<6*3600e3?x:null}catch(e){return null}}
 /* Hedef ve aynı günün sonraki duraklarını kaydır (gece yarısını geçen duraklar dahil) */
+/* Hedeften (ya da henüz yola çıkılmadıysa çıkış saatinden) itibaren o günün durakları kayar */
 function kaydir(list,i,d,haric){
-  const hedef=list[i],ids=list.slice(haric?i+1:i).filter(x=>x.s.d===hedef.s.d&&!x.s.v).map(x=>x.id);
+  const h=list[i];let bas=haric?h.z+1:h.z;
+  if(!haric){const c=list.slice(0,i).filter(x=>x.s.d===h.s.d&&cikisMi(x.s)&&!x.s.v&&x.z>=Date.now()-20*60e3).pop();if(c)bas=c.z}
+  kaydirGun(h.s.d,bas,d)}
+function kaydirGun(gun,bas,d){
+  const ids=Object.entries(P.items).filter(([,s])=>s&&s.d===gun&&s.t&&!s.v&&zamanOf(s).getTime()>=bas).map(([id])=>id);
   if(!ids.length)return;
   const yeni={};ids.forEach(k=>yeni[k]={t:saatEkle(P.items[k].t,d)});
   try{localStorage.setItem("sonKaydirma",JSON.stringify({t:Date.now(),ids,d}))}catch(e){}
@@ -548,12 +567,17 @@ function kaydir(list,i,d,haric){
 }
 function geriAl(){const x=sonKaydirma();if(!x)return;const yeni={};x.ids.forEach(k=>{if(P.items[k])yeni[k]={t:saatEkle(P.items[k].t,-x.d)}});
   try{localStorage.removeItem("sonKaydirma")}catch(e){}P.toplu(yeni)}
-function vardim(id,list,i){
-  const gec=Math.round((Date.now()-list[i].z)/60000);
-  P.koy(id,{v:Date.now()});
-  if(gec>10){const yuv=Math.round(gec/5)*5;
-    if(confirm(`Plandan ${yuv} dk geç vardın. Bugünün kalan durakları da ${yuv} dk kaydırılsın mı?`))kaydir(list,i,yuv,true)}
+function vardim(id){varis(id)}
+const siraliListe=()=>Object.entries(P.items).filter(([,s])=>s&&s.d&&s.t&&s.n).map(([id,s])=>({id,s,z:zamanOf(s).getTime()})).sort((a,b)=>a.z-b.z);
+/* Herhangi bir durağa varış: erken ya da geç olabilir. Aynı günün daha önceki, uğranmamış durakları "geçildi" sayılır. */
+function varis(id){
+  const list=siraliListe(),i=list.findIndex(x=>x.id===id);if(i<0)return;
+  const x=list[i],now=Date.now(),fark=Math.round((now-x.z)/60000);
+  const d={};list.slice(0,i).forEach(y=>{if(y.s.d===x.s.d&&!y.s.v)d[y.id]={v:y.z}});d[id]={v:now};P.toplu(d);
+  if(Math.abs(fark)>10&&Math.abs(fark)<=240){const yuv=Math.round(fark/5)*5,m=Math.abs(yuv);
+    if(confirm(`Plandan ${m} dk ${yuv>0?"geç":"erken"} vardın. Bugünün kalan durakları da ${m} dk ${yuv>0?"ileri kaydırılsın":"öne çekilsin"} mi?`))kaydirGun(x.s.d,x.z+1,yuv)}
 }
+function varisGeriAl(id){P.koy(id,{v:null,ay:null})}
 setInterval(()=>{siradaCiz();if(Object.values(P.items).some(s=>s.d===bugunStr()&&(s.ac||s.kp))&&!acikForm)planCiz()},60000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)siradaCiz()});
 
