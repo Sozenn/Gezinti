@@ -73,6 +73,11 @@ td{padding:7px 0;border-top:1px solid var(--line)}td:last-child{text-align:right
 .add button{flex:none;font:600 14px var(--body);padding:0 14px;border-radius:9px;border:0;background:var(--ink);color:var(--surface);cursor:pointer}
 .phead{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
 .pct{font-family:var(--display);font-size:28px;font-weight:800;color:var(--ok);font-variant-numeric:tabular-nums}
+.grup-kart{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.gust{display:flex;flex-direction:column;gap:2px}.gust b{font-weight:600;font-variant-numeric:tabular-nums}.gust small{color:var(--muted);font-size:13px}
+.gbtn{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gbtn button{font:600 14px var(--body);padding:10px 6px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer}
+.gbtn button.ana{background:var(--ink);border-color:var(--ink);color:var(--surface)}
 .seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:var(--ink-soft);border-radius:12px}
 .seg button{font:600 14px var(--body);padding:9px 6px;border:0;border-radius:9px;background:transparent;color:var(--ink);cursor:pointer}
 .seg button[aria-selected="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.12)}
@@ -138,6 +143,7 @@ td{padding:7px 0;border-top:1px solid var(--line)}td:last-child{text-align:right
 </section>
 
 <section id="bavul" class="panel" hidden>
+  <div class="grup-kart"></div>
   <div class="seg" role="tablist" data-grup="bavul">
     <button type="button" role="tab" data-alt="bavulOneri">Önerilen liste</button>
     <button type="button" role="tab" data-alt="bavulKendi">Kendi listem</button>
@@ -159,6 +165,7 @@ td{padding:7px 0;border-top:1px solid var(--line)}td:last-child{text-align:right
 </section>
 
 <section id="ev" class="panel" hidden>
+  <div class="grup-kart"></div>
   <div class="seg" role="tablist" data-grup="ev">
     <button type="button" role="tab" data-alt="evOneri">Önerilen liste</button>
     <button type="button" role="tab" data-alt="evKendi">Kendi listem</button>
@@ -289,46 +296,63 @@ async function kmKaydet(){const v={bas:kb.value,son:ks.value,litre:lt.value};
 tu.oninput=fi.oninput=hesap;hesap();
 
 /* Yazılabilir kontrol listeleri: eşyaları kullanıcı yazar, bu cihazda saklanır. */
+/* Ortak liste durumu. Firebase modülü bağlanınca yaz() ve kod dolar. */
+const SYNC=window.SYNC={kod:null,yaz:null};
+/* Yazılabilir kontrol listeleri. Her madde kimlikle saklanır: {id:{t,b,ok,s}}.
+   Böylece iki kişi aynı anda işaretleyince birbirinin değişikliğini ezmez. */
 function kontrolListesi({ad,bolumler,bos,varsayilan,ekle=true}){
   const el=document.getElementById(ad+"Liste"),stat=document.getElementById(ad+"Stat");
-  let data={};
-  const bastan=()=>{data={};bolumler.forEach(b=>data[b]=(varsayilan&&varsayilan[b]||[]).map(t=>({t,ok:false})))};
+  const yeniId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+  const varsayilanlar=()=>{const o={};let s=1;bolumler.forEach(b=>(varsayilan&&varsayilan[b]||[]).forEach(t=>{o["v"+s]={t,b,ok:false,s:s++}}));return o};
+  let items={};
   let kayit=null;try{kayit=JSON.parse(localStorage.getItem("liste-"+ad))}catch(e){}
-  if(kayit&&typeof kayit==="object")data=kayit;else bastan();
-  bolumler.forEach(b=>{if(!Array.isArray(data[b]))data[b]=[]});
-  const sakla=()=>{try{localStorage.setItem("liste-"+ad,JSON.stringify(data))}catch(e){stat.textContent="Kaydedilemedi: tarayıcı depolamaya izin vermiyor."}};
+  if(kayit&&kayit.items&&typeof kayit.items==="object")items=kayit.items;
+  else if(kayit&&typeof kayit==="object"){let s=1;/* eski biçim: {bölüm:[{t,ok}]} */
+    Object.keys(kayit).forEach(b=>{if(Array.isArray(kayit[b]))kayit[b].forEach(x=>{if(x&&x.t)items[yeniId()+s]={t:String(x.t),b:bolumler.includes(b)?b:bolumler[0],ok:!!x.ok,s:s++}})})}
+  else items=varsayilanlar();
+  const sakla=()=>{try{localStorage.setItem("liste-"+ad,JSON.stringify({items}))}catch(e){}};
+  const gonder=(degisim,tam)=>{sakla();if(SYNC.yaz)SYNC.yaz(ad,degisim,tam)};
   function ciz(odak){
     el.textContent="";let n=0,t=0;
-    bolumler.forEach((b,bi)=>{const items=data[b];const ok=items.filter(x=>x.ok).length;t+=items.length;n+=ok;
+    const hepsi=Object.entries(items).filter(([,x])=>x&&typeof x.t==="string").sort((a,b)=>(a[1].s||0)-(b[1].s||0));
+    bolumler.forEach((b,bi)=>{
+      const liste=hepsi.filter(([,x])=>x.b===b||(bi===0&&!bolumler.includes(x.b)));
+      const ok=liste.filter(([,x])=>x.ok).length;t+=liste.length;n+=ok;
       const g=document.createElement("div");g.className="grp";
-      if(b){const h=document.createElement("h4");h.textContent=b+(items.length?` · ${ok}/${items.length}`:"");g.append(h)}
-      items.forEach((it,k)=>{const row=document.createElement("div");row.className="chk"+(it.ok?" done":"");
+      if(b){const h=document.createElement("h4");h.textContent=b+(liste.length?` · ${ok}/${liste.length}`:"");g.append(h)}
+      liste.forEach(([id,it])=>{const row=document.createElement("div");row.className="chk"+(it.ok?" done":"");
         const l=document.createElement("label");l.className="lbl";
         const cb=document.createElement("input");cb.type="checkbox";cb.checked=!!it.ok;
-        cb.onchange=()=>{it.ok=cb.checked;sakla();ciz()};
+        cb.onchange=()=>{it.ok=cb.checked;gonder({[id]:{ok:it.ok}});ciz()};
         const sp=document.createElement("span");sp.textContent=it.t;l.append(cb,sp);
         const del=document.createElement("button");del.className="del";del.type="button";del.textContent="×";del.setAttribute("aria-label",it.t+" sil");
-        del.onclick=()=>{items.splice(k,1);sakla();ciz()};
+        del.onclick=()=>{delete items[id];gonder({[id]:null});ciz()};
         row.append(l,del);g.append(row)});
       if(ekle){const f=document.createElement("form");f.className="add";
-      const inp=document.createElement("input");inp.type="text";inp.placeholder=(b||"Kontrol")+" ekle…";inp.maxLength=80;inp.setAttribute("aria-label",(b||"Listeye")+" ekle");
-      const btn=document.createElement("button");btn.type="submit";btn.textContent="Ekle";
-      f.onsubmit=e=>{e.preventDefault();const v=inp.value.trim();if(!v)return;items.push({t:v,ok:false});sakla();ciz(bi)};
-      f.append(inp,btn);g.append(f);if(odak===bi)setTimeout(()=>inp.focus())}
+        const inp=document.createElement("input");inp.type="text";inp.placeholder=(b||"Kontrol")+" ekle…";inp.maxLength=80;inp.setAttribute("aria-label",(b||"Listeye")+" ekle");
+        const btn=document.createElement("button");btn.type="submit";btn.textContent="Ekle";
+        f.onsubmit=e=>{e.preventDefault();const v=inp.value.trim();if(!v)return;const id=yeniId();items[id]={t:v,b,ok:false,s:Date.now()};gonder({[id]:items[id]});ciz(bi)};
+        f.append(inp,btn);g.append(f);if(odak===bi)setTimeout(()=>inp.focus())}
       el.append(g)});
     const yuzde=t?Math.round(n/t*100):0;
     document.getElementById(ad+"Bar").style.width=yuzde+"%";
     document.getElementById(ad+"Pct").textContent=yuzde+"%";
-    stat.textContent=!t?bos:(n===t?"Hepsi tamam ✓":`${n}/${t} tamam`)+" · Bu cihazda saklanır.";
+    const yer=SYNC.kod?" · 👥 Grupla ortak.":" · Bu cihazda saklanır.";
+    stat.textContent=!t?bos:(n===t?"Hepsi tamam ✓":`${n}/${t} tamam`)+yer;
   }
   ciz();
-  return{sifirla(){bolumler.forEach(b=>data[b].forEach(x=>x.ok=false));sakla();ciz()},yukle(){bastan();sakla();ciz()}};
+  return{
+    sifirla(){const d={};Object.entries(items).forEach(([id,x])=>{if(x.ok){x.ok=false;d[id]={ok:false}}});gonder(d);ciz()},
+    yukle(){items=varsayilanlar();gonder(null,items);ciz()},
+    hepsi:()=>items,
+    uzak(v){items=v&&typeof v==="object"?v:{};sakla();ciz()},
+    yenile:()=>ciz()};
 }
 /* Eski sürümde bu cihaza kaydedilen bavul listesi varsa taşı */
 try{const eski=localStorage.getItem("bavul2");if(eski&&!localStorage.getItem("liste-bavul"))localStorage.setItem("liste-bavul",eski)}catch(e){}
-const L={};
-L.bavul=kontrolListesi({ad:"bavul",bolumler:["Giyim","Ayakkabı","Yol","Kişisel bakım","Özel eşya"],bos:"Her bölüme götüreceklerini yaz. Liste bu cihazda saklanır."});
-L.ev=kontrolListesi({ad:"ev",bolumler:[""],bos:"Evden çıkarken kontrol edeceklerini yaz. Liste bu cihazda saklanır."});
+const L=window.L={};
+L.bavul=kontrolListesi({ad:"bavul",bolumler:["Giyim","Ayakkabı","Yol","Kişisel bakım","Özel eşya"],bos:"Her bölüme götüreceklerini yaz."});
+L.ev=kontrolListesi({ad:"ev",bolumler:[""],bos:"Evden çıkarken kontrol edeceklerini yaz."});
 L.bavulOneri=kontrolListesi({ad:"bavulOneri",ekle:false,bos:"Liste boş. Aşağıdan önerilen listeyi baştan yükleyebilirsin.",
   bolumler:["Giyim","Ayakkabı","Yol","Kişisel bakım","Özel eşya"],varsayilan:{
   "Giyim":["Uzun kollu üstler (5 gün)","Polar ya da sweatshirt","Su geçirmez ince mont (Adana yağmuru)","Kalın mont ya da şişme yelek (Kapadokya sabahı ~6°C)","Bere, eldiven, boyunluk (balon izleme)","Rahat pantolon / kot","Kanyon yürüyüşü için rahat kıyafet","İç çamaşırı ve çorap (6 gün)","Pijama","Islanırsa diye yedek kıyafet seti"],
@@ -430,6 +454,108 @@ navigator.permissions?.query({name:"geolocation"}).then(p=>{if(p.state==="grante
 const tazele=()=>{const v=oku();if(v&&Date.now()-v.t>15*60000&&!document.hidden)navigator.permissions?.query({name:"geolocation"}).then(p=>{if(p.state==="granted")al(false)}).catch(()=>{})};
 setInterval(tazele,60000);document.addEventListener("visibilitychange",tazele);
 })();
+</script>
+<script type="module">
+/* Ortak liste: Firebase (Spark, ücretsiz). Grup kodu bilinen herkes aynı listeleri görür.
+   Ayar kodu gizli değildir; erişimi Firestore kuralları ve tahmin edilemez kodlar korur. */
+const CFG={apiKey:"AIzaSyC7K-D1bZKEmpJXJqR4ulkFoQE_86CRm1A",authDomain:"gezinti-5393d.firebaseapp.com",projectId:"gezinti-5393d",
+  storageBucket:"gezinti-5393d.firebasestorage.app",messagingSenderId:"680019243670",appId:"1:680019243670:web:86177138c733f667ca88b7"};
+const V="10.12.2",ABC="ABCDEFGHJKMNPQRSTUVWXYZ23456789",KEY="grup-kod";
+const L=window.L,SYNC=window.SYNC;
+let fb=null,abonelik=[],durum="kapali",mesaj="";
+const goster=k=>k.match(/.{4}/g).join("-");
+const temizle=x=>String(x||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+const gecerli=k=>k.length===12&&[...k].every(c=>ABC.includes(c));
+function yeniKod(){const a=new Uint32Array(12);crypto.getRandomValues(a);return [...a].map(x=>ABC[x%ABC.length]).join("")}
+
+async function firebase(){
+  if(fb)return fb;
+  const u=n=>`https://www.gstatic.com/firebasejs/${V}/firebase-${n}.js`;
+  const [{initializeApp},{getAuth,signInAnonymously},fs]=await Promise.all([import(u("app")),import(u("auth")),import(u("firestore"))]);
+  const app=initializeApp(CFG);
+  await signInAnonymously(getAuth(app));
+  let db;try{db=fs.initializeFirestore(app,{localCache:fs.persistentLocalCache({tabManager:fs.persistentMultipleTabManager()})})}catch(e){db=fs.getFirestore(app)}
+  fb={db,...fs};return fb;
+}
+function hata(e){
+  console.error(e);durum="hata";
+  mesaj=e&&e.code==="permission-denied"?"Veritabanı izin vermedi. Firebase kuralları eklenmemiş olabilir.":
+        "Bağlantı kurulamadı. İnternet gelince sayfayı yenile; listeler bu telefonda duruyor.";
+  ciz();
+}
+async function baglan(kod){
+  SYNC.kod=kod;durum="baglaniyor";mesaj="";ciz();
+  try{
+    const f=await firebase();
+    abonelik.forEach(x=>x());abonelik=[];
+    if(SYNC.kod!==kod)return;
+    SYNC.yaz=(ad,degisim,tam)=>{const ref=f.doc(f.db,"gruplar",kod,"listeler",ad);
+      if(tam)return f.setDoc(ref,{items:tam}).catch(hata);
+      const items={};Object.entries(degisim||{}).forEach(([id,v])=>items[id]=v===null?f.deleteField():v);
+      if(Object.keys(items).length)f.setDoc(ref,{items},{merge:true}).catch(hata)};
+    Object.keys(L).forEach(ad=>{
+      const ref=f.doc(f.db,"gruplar",kod,"listeler",ad);let yuklendi=false;
+      abonelik.push(f.onSnapshot(ref,{includeMetadataChanges:false},snap=>{
+        if(!snap.exists()){
+          /* Sunucu "yok" diyorsa bu telefondaki listeyi gruba yükle. Önbellekten gelen "yok"a güvenme. */
+          if(!snap.metadata.fromCache&&!yuklendi){yuklendi=true;f.setDoc(ref,{items:L[ad].hepsi()}).catch(hata)}
+          return}
+        L[ad].uzak(snap.data().items);
+        if(durum!=="bagli"){durum="bagli";mesaj="";ciz()}
+      },hata));
+    });
+    Object.values(L).forEach(x=>x.yenile());
+  }catch(e){hata(e)}
+}
+function ayril(){
+  abonelik.forEach(x=>x());abonelik=[];SYNC.kod=null;SYNC.yaz=null;
+  try{localStorage.removeItem(KEY)}catch(e){}
+  durum="kapali";mesaj="";ciz();Object.values(L).forEach(x=>x.yenile());
+}
+function kur(kod,onay){
+  if(onay&&!confirm(onay))return;
+  try{localStorage.setItem(KEY,kod)}catch(e){}
+  baglan(kod);
+}
+async function davet(){
+  const kod=SYNC.kod;if(!kod)return;
+  const url=location.origin+location.pathname+"#grup="+goster(kod);
+  const metin="Gezi listemize katıl. Grup kodu: "+goster(kod);
+  try{if(navigator.share){await navigator.share({title:"Gezinti",text:metin,url});return}}catch(e){if(e&&e.name==="AbortError")return}
+  try{await navigator.clipboard.writeText(metin+"\n"+url);alert("Davet linki kopyalandı. Eşine mesajla gönder.")}
+  catch(e){prompt("Bu linki kopyalayıp gönder:",url)}
+}
+function ciz(){
+  document.querySelectorAll(".grup-kart").forEach(k=>{
+    k.textContent="";
+    const ust=document.createElement("div");ust.className="gust";
+    const b=document.createElement("b");const s=document.createElement("small");ust.append(b,s);
+    const btns=document.createElement("div");btns.className="gbtn";
+    const btn=(t,f,ana)=>{const x=document.createElement("button");x.type="button";x.textContent=t;x.onclick=f;if(ana)x.className="ana";btns.append(x)};
+    if(SYNC.kod){
+      b.textContent="👥 Grup "+goster(SYNC.kod);
+      s.textContent=durum==="bagli"?"✓ Bağlı · listeler grupla anlık ortak":durum==="baglaniyor"?"Bağlanıyor…":mesaj;
+      btn("Davet et",davet,true);
+      btn("Ayrıl",()=>{if(confirm("Gruptan ayrılınca listeler bu telefonda kalır ama artık eşinle eşitlenmez. Ayrılınsın mı?"))ayril()});
+    }else{
+      b.textContent="👥 Ortak liste";
+      s.textContent=durum==="baglaniyor"?"Bağlanıyor…":(mesaj||"Eşinle ya da birlikte gezdiğin kişilerle aynı listeyi kullan.");
+      btn("Grup oluştur",()=>kur(yeniKod(),"Yeni grup oluşturulsun mu? Bu telefondaki listeler gruba yüklenir."),true);
+      btn("Koda katıl",()=>{const k=temizle(prompt("Grup kodunu yaz (örn. ABCD-EFGH-JKMN):"));if(!k)return;
+        if(!gecerli(k))return alert("Kod hatalı görünüyor. 12 harf ve rakamdan oluşmalı.");
+        kur(k,"Gruba katılınca bu telefondaki listelerin yerine grubun listeleri gelir. Devam edilsin mi?")});
+    }
+    k.append(ust,btns);
+  });
+}
+/* Davet linkiyle açıldıysa katılmayı sor */
+const m=location.hash.match(/grup=([A-Za-z0-9-]+)/);
+if(m){history.replaceState(null,"",location.pathname+location.search);
+  const k=temizle(m[1]);
+  if(gecerli(k)&&k!==SYNC.kod)kur(k,"Davet edildiğin gruba ("+goster(k)+") katılmak ister misin? Bu telefondaki listelerin yerine grubun listeleri gelir.");}
+let kayitli=null;try{kayitli=localStorage.getItem(KEY)}catch(e){}
+if(!SYNC.kod&&kayitli&&gecerli(kayitli))baglan(kayitli);
+ciz();
 </script>
 <script>if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{})</script>
 </body></html>
