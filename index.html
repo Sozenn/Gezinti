@@ -73,6 +73,10 @@ td{padding:7px 0;border-top:1px solid var(--line)}td:last-child{text-align:right
 .add button{flex:none;font:600 14px var(--body);padding:0 14px;border-radius:9px;border:0;background:var(--ink);color:var(--surface);cursor:pointer}
 .phead{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
 .pct{font-family:var(--display);font-size:28px;font-weight:800;color:var(--ok);font-variant-numeric:tabular-nums}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:var(--ink-soft);border-radius:12px}
+.seg button{font:600 14px var(--body);padding:9px 6px;border:0;border-radius:9px;background:transparent;color:var(--ink);cursor:pointer}
+.seg button[aria-selected="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.acts{display:flex;flex-wrap:wrap;gap:8px}
 .reset{align-self:flex-start;font:600 13px var(--body);padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
 .hava{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
 .hbtn{font:600 14px var(--body);padding:10px;border-radius:10px;border:0;background:var(--ink-soft);color:var(--ink);cursor:pointer}
@@ -134,21 +138,44 @@ td{padding:7px 0;border-top:1px solid var(--line)}td:last-child{text-align:right
 </section>
 
 <section id="bavul" class="panel" hidden>
-  <div class="card">
-    <div class="phead"><h3>Bavul listesi</h3><b class="pct" id="bavulPct">0%</b></div>
+  <div class="seg" role="tablist" data-grup="bavul">
+    <button type="button" role="tab" data-alt="bavulOneri">Önerilen liste</button>
+    <button type="button" role="tab" data-alt="bavulKendi">Kendi listem</button>
+  </div>
+  <div class="card" id="bavulOneri">
+    <div class="phead"><h3>Bu geziye göre bavul</h3><b class="pct" id="bavulOneriPct">0%</b></div>
+    <div class="prog" aria-hidden="true"><i id="bavulOneriBar"></i></div>
+    <p class="note" id="bavulOneriStat"></p>
+    <div id="bavulOneriListe"></div>
+    <div class="acts"><button type="button" class="reset" data-sifirla="bavulOneri">İşaretleri sıfırla</button><button type="button" class="reset" data-yukle="bavulOneri">Önerilen listeyi baştan yükle</button></div>
+  </div>
+  <div class="card" id="bavulKendi" hidden>
+    <div class="phead"><h3>Kendi bavul listem</h3><b class="pct" id="bavulPct">0%</b></div>
     <div class="prog" aria-hidden="true"><i id="bavulBar"></i></div>
     <p class="note" id="bavulStat"></p>
     <div id="bavulListe"></div>
+    <div class="acts"><button type="button" class="reset" data-sifirla="bavul">İşaretleri sıfırla</button></div>
   </div>
 </section>
 
 <section id="ev" class="panel" hidden>
-  <div class="card">
-    <div class="phead"><h3>Evden çıkarken</h3><b class="pct" id="evPct">0%</b></div>
+  <div class="seg" role="tablist" data-grup="ev">
+    <button type="button" role="tab" data-alt="evOneri">Önerilen liste</button>
+    <button type="button" role="tab" data-alt="evKendi">Kendi listem</button>
+  </div>
+  <div class="card" id="evOneri">
+    <div class="phead"><h3>Evden çıkarken</h3><b class="pct" id="evOneriPct">0%</b></div>
+    <div class="prog" aria-hidden="true"><i id="evOneriBar"></i></div>
+    <p class="note" id="evOneriStat"></p>
+    <div id="evOneriListe"></div>
+    <div class="acts"><button type="button" class="reset" data-sifirla="evOneri">İşaretleri sıfırla</button><button type="button" class="reset" data-yukle="evOneri">Önerilen listeyi baştan yükle</button></div>
+  </div>
+  <div class="card" id="evKendi" hidden>
+    <div class="phead"><h3>Kendi kontrol listem</h3><b class="pct" id="evPct">0%</b></div>
     <div class="prog" aria-hidden="true"><i id="evBar"></i></div>
     <p class="note" id="evStat"></p>
     <div id="evListe"></div>
-    <button type="button" class="reset" id="evSifirla">İşaretleri sıfırla</button>
+    <div class="acts"><button type="button" class="reset" data-sifirla="ev">İşaretleri sıfırla</button></div>
   </div>
 </section>
 </div>
@@ -262,10 +289,12 @@ async function kmKaydet(){const v={bas:kb.value,son:ks.value,litre:lt.value};
 tu.oninput=fi.oninput=hesap;hesap();
 
 /* Yazılabilir kontrol listeleri: eşyaları kullanıcı yazar, bu cihazda saklanır. */
-function kontrolListesi({ad,bolumler,bos}){
+function kontrolListesi({ad,bolumler,bos,varsayilan,ekle=true}){
   const el=document.getElementById(ad+"Liste"),stat=document.getElementById(ad+"Stat");
   let data={};
-  try{const v=JSON.parse(localStorage.getItem("liste-"+ad)||"{}");if(v&&typeof v==="object")data=v}catch(e){}
+  const bastan=()=>{data={};bolumler.forEach(b=>data[b]=(varsayilan&&varsayilan[b]||[]).map(t=>({t,ok:false})))};
+  let kayit=null;try{kayit=JSON.parse(localStorage.getItem("liste-"+ad))}catch(e){}
+  if(kayit&&typeof kayit==="object")data=kayit;else bastan();
   bolumler.forEach(b=>{if(!Array.isArray(data[b]))data[b]=[]});
   const sakla=()=>{try{localStorage.setItem("liste-"+ad,JSON.stringify(data))}catch(e){stat.textContent="Kaydedilemedi: tarayıcı depolamaya izin vermiyor."}};
   function ciz(odak){
@@ -281,25 +310,48 @@ function kontrolListesi({ad,bolumler,bos}){
         const del=document.createElement("button");del.className="del";del.type="button";del.textContent="×";del.setAttribute("aria-label",it.t+" sil");
         del.onclick=()=>{items.splice(k,1);sakla();ciz()};
         row.append(l,del);g.append(row)});
-      const f=document.createElement("form");f.className="add";
+      if(ekle){const f=document.createElement("form");f.className="add";
       const inp=document.createElement("input");inp.type="text";inp.placeholder=(b||"Kontrol")+" ekle…";inp.maxLength=80;inp.setAttribute("aria-label",(b||"Listeye")+" ekle");
       const btn=document.createElement("button");btn.type="submit";btn.textContent="Ekle";
       f.onsubmit=e=>{e.preventDefault();const v=inp.value.trim();if(!v)return;items.push({t:v,ok:false});sakla();ciz(bi)};
-      f.append(inp,btn);g.append(f);el.append(g);
-      if(odak===bi)inp.focus()});
+      f.append(inp,btn);g.append(f);if(odak===bi)setTimeout(()=>inp.focus())}
+      el.append(g)});
     const yuzde=t?Math.round(n/t*100):0;
     document.getElementById(ad+"Bar").style.width=yuzde+"%";
     document.getElementById(ad+"Pct").textContent=yuzde+"%";
     stat.textContent=!t?bos:(n===t?"Hepsi tamam ✓":`${n}/${t} tamam`)+" · Bu cihazda saklanır.";
   }
   ciz();
-  return{sifirla(){bolumler.forEach(b=>data[b].forEach(x=>x.ok=false));sakla();ciz()}};
+  return{sifirla(){bolumler.forEach(b=>data[b].forEach(x=>x.ok=false));sakla();ciz()},yukle(){bastan();sakla();ciz()}};
 }
 /* Eski sürümde bu cihaza kaydedilen bavul listesi varsa taşı */
 try{const eski=localStorage.getItem("bavul2");if(eski&&!localStorage.getItem("liste-bavul"))localStorage.setItem("liste-bavul",eski)}catch(e){}
-kontrolListesi({ad:"bavul",bolumler:["Giyim","Ayakkabı","Yol","Kişisel bakım","Özel eşya"],bos:"Her bölüme götüreceklerini yaz. Liste bu cihazda saklanır."});
-const evListe=kontrolListesi({ad:"ev",bolumler:[""],bos:"Evden çıkarken kontrol edeceklerini yaz, örneğin ocak, kombi, pencereler. Liste bu cihazda saklanır."});
-document.getElementById("evSifirla").onclick=()=>{if(confirm("Tüm işaretler kaldırılsın mı? Yazdıkların silinmez."))evListe.sifirla()};
+const L={};
+L.bavul=kontrolListesi({ad:"bavul",bolumler:["Giyim","Ayakkabı","Yol","Kişisel bakım","Özel eşya"],bos:"Her bölüme götüreceklerini yaz. Liste bu cihazda saklanır."});
+L.ev=kontrolListesi({ad:"ev",bolumler:[""],bos:"Evden çıkarken kontrol edeceklerini yaz. Liste bu cihazda saklanır."});
+L.bavulOneri=kontrolListesi({ad:"bavulOneri",ekle:false,bos:"Liste boş. Aşağıdan önerilen listeyi baştan yükleyebilirsin.",
+  bolumler:["Giyim","Ayakkabı","Yol","Kişisel bakım","Özel eşya"],varsayilan:{
+  "Giyim":["Uzun kollu üstler (5 gün)","Polar ya da sweatshirt","Su geçirmez ince mont (Adana yağmuru)","Kalın mont ya da şişme yelek (Kapadokya sabahı ~6°C)","Bere, eldiven, boyunluk (balon izleme)","Rahat pantolon / kot","Kanyon yürüyüşü için rahat kıyafet","İç çamaşırı ve çorap (6 gün)","Pijama","Islanırsa diye yedek kıyafet seti"],
+  "Ayakkabı":["Su geçirmez spor / trekking ayakkabı (Kapıkaya)","Yedek ayakkabı (ıslanırsa)","Otel terliği"],
+  "Yol":["Şemsiye","Güneş gözlüğü","Su ve atıştırmalık","Termos (balon sabahı sıcak çay)","Telefon araç tutucu","Araç şarjı ve kablolar","Powerbank","Islak mendil ve peçete","Çöp poşeti","İnce battaniye / boyun yastığı","Araçta reflektör, ilk yardım çantası, yangın tüpü","Biraz nakit (otopark, köy yolları)","Bagajda baklava kutuları için yer 🎁"],
+  "Kişisel bakım":["Diş fırçası ve macun","Şampuan / duş jeli","Deodorant","Tarak / fırça","Nemlendirici ve dudak kremi (Kapadokya kuru ve soğuk)","Güneş kremi","Düzenli kullanılan ilaçlar","Ağrı kesici","Mide ilacı (kebap turu 🌶️)","Yara bandı","Gözlük / lens ve solüsyonu","Tıraş ya da makyaj malzemeleri"],
+  "Özel eşya":["Kimlik","Ehliyet ve ruhsat","Sigorta / kasko poliçesi (telefonda)","Banka kartları","Otel rezervasyonları (Golden Lake + Kapadokya)","Balon rezervasyonu (varsa)","Müzekart (Adana Müzesi, Göreme, Hacıbektaş)","Telefon şarj kablosu","Kulaklık","Fotoğraf makinesi, yedek pil, hafıza kartı","Ev anahtarı","Yedek araç anahtarı"]}});
+L.evOneri=kontrolListesi({ad:"evOneri",ekle:false,bos:"Liste boş. Aşağıdan önerilen listeyi baştan yükleyebilirsin.",
+  bolumler:["Gaz ve mutfak","Su ve elektrik","Güvenlik","Ev işleri","Araç"],varsayilan:{
+  "Gaz ve mutfak":["Doğalgaz vanası kapalı","Ocak ve fırın kapalı","Kombi tatil / ekonomi modunda (donma koruması açık)","Buzdolabında bozulacak yiyecek kalmadı","Çöpler çıkarıldı","Bulaşık makinesi boşaltıldı, kapağı aralık"],
+  "Su ve elektrik":["Ana su vanası kapalı","Musluklar kapalı","Çamaşır makinesinin musluğu kapalı","Ütü, saç kurutma makinesi, kettle fişte değil","TV ve gereksiz cihazların fişi çekildi","Klima / elektrikli ısıtıcı kapalı","Işıklar kapalı"],
+  "Güvenlik":["Pencereler kapalı ve kilitli","Balkon kapısı kilitli","Değerli eşyalar kaldırıldı","Komşuya haber verildi","Kapı iki tur kilitlendi","Ev anahtarı yanımda"],
+  "Ev işleri":["Çiçekler sulandı","Makinede çamaşır kalmadı","Kargo / teslimatlar ertelendi"],
+  "Araç":["Depo dolu","Lastik basıncı kontrol edildi","Yağ ve su kontrol edildi","Silecek suyu dolu (yağmur var)","HGS bakiyesi yüklendi"]}});
+document.querySelectorAll("[data-sifirla]").forEach(b=>b.onclick=()=>{if(confirm("Tüm işaretler kaldırılsın mı? Maddeler silinmez."))L[b.dataset.sifirla].sifirla()});
+document.querySelectorAll("[data-yukle]").forEach(b=>b.onclick=()=>{if(confirm("Önerilen liste baştaki haline dönsün mü? Sildiğin maddeler geri gelir, işaretler kalkar."))L[b.dataset.yukle].yukle()});
+/* Alt sekmeler: Önerilen liste / Kendi listem. Seçim bu cihazda hatırlanır. */
+document.querySelectorAll(".seg").forEach(seg=>{
+  const btns=[...seg.querySelectorAll("button")],k="alt-"+seg.dataset.grup;
+  const sec=id=>{btns.forEach(b=>{const on=b.dataset.alt===id;b.setAttribute("aria-selected",on);document.getElementById(b.dataset.alt).hidden=!on});try{localStorage.setItem(k,id)}catch(e){}};
+  btns.forEach(b=>b.onclick=()=>sec(b.dataset.alt));
+  let s0=null;try{s0=localStorage.getItem(k)}catch(e){}
+  sec(btns.some(b=>b.dataset.alt===s0)?s0:btns[0].dataset.alt)});
 (async()=>{const db=await window.claude?.use?.("db").catch(()=>null);if(!db)return;
   kmDoc=db.collection("yolculuk").doc("km");
   kmDoc.onSnapshot(d=>{const v=d.exists?d.data():null;if(!v||kmYaz)return;
