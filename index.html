@@ -1,0 +1,235 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#1d4a63"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>Adana–Kapadokya Gezisi</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Layout: tek sütun, sticky sekme çubuğu; gün kartları zaman çizelgesi gibi */
+:root{
+  --bg:#f3f5f7;--surface:#ffffff;--fg:#17212b;--muted:#5d6b78;--line:#dde3e9;
+  --accent:#c2381f;--accent-soft:#fbe7e2;--ink:#1d4a63;--ink-soft:#e2edf3;--ok:#2f7d4f;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Figtree",ui-sans-serif,system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#10161c;--surface:#18212a;--fg:#e8edf1;--muted:#97a5b2;--line:#2a3640;
+  --accent:#f0694d;--accent-soft:#3a1f19;--ink:#8cc3de;--ink-soft:#1c2f3b;--ok:#6cc790;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10161c;--surface:#18212a;--fg:#e8edf1;--muted:#97a5b2;--line:#2a3640;
+  --accent:#f0694d;--accent-soft:#3a1f19;--ink:#8cc3de;--ink-soft:#1c2f3b;--ok:#6cc790;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+header{padding-top:22px;display:flex;flex-direction:column;gap:4px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,8vw,40px);line-height:1.05;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1 span{color:var(--accent)}
+.sub{color:var(--muted);margin:0}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px;display:flex;gap:6px}
+nav button{flex:1;font:600 14px var(--body);padding:10px 6px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+nav button[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.day{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.day.today{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.dhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.dhead h2{font-family:var(--display);font-weight:600;font-size:20px;margin:0}
+.tag{font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:99px;background:var(--ink-soft);color:var(--ink)}
+.today .tag{background:var(--accent);color:var(--surface)}
+.wx{font-size:13px;color:var(--muted);margin:0}
+ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+li.stop{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line)}
+.t{font-variant-numeric:tabular-nums;font-weight:600;color:var(--ink);font-size:14px}
+.n{min-width:0}.n b{font-weight:600;display:block}.n small{color:var(--muted);font-size:13px}
+.go{font:600 13px var(--body);text-decoration:none;color:var(--accent);background:var(--accent-soft);padding:7px 11px;border-radius:8px;white-space:nowrap}
+.cta{display:block;text-align:center;font:600 15px var(--body);text-decoration:none;background:var(--accent);color:#fff;padding:12px;border-radius:10px}
+.panel{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.card h3{font-family:var(--display);font-weight:600;font-size:18px;margin:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);font-weight:500}
+input[type=number]{font:600 17px var(--body);padding:10px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font-variant-numeric:tabular-nums;width:100%;box-sizing:border-box}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:14px}
+td{padding:7px 0;border-top:1px solid var(--line)}td:last-child{text-align:right}
+.tot{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding-top:8px;border-top:2px solid var(--fg)}
+.tot b{font-family:var(--display);font-size:30px;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums}
+.note{font-size:12.5px;color:var(--muted);margin:0}
+.grp{display:flex;flex-direction:column;gap:2px}
+.grp h4{margin:6px 0 4px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.chk{display:flex;align-items:center;gap:10px;padding:9px 2px;border-top:1px solid var(--line);cursor:pointer;color:var(--fg);font-size:15px;font-weight:400}
+.chk input{width:20px;height:20px;accent-color:var(--ok);flex:none}
+.chk.done span{text-decoration:line-through;color:var(--muted)}
+.prog{height:8px;background:var(--ink-soft);border-radius:99px;overflow:hidden}.prog i{display:block;height:100%;background:var(--ok);width:0;transition:width .3s}
+@media (prefers-reduced-motion:reduce){.prog i{transition:none}}
+</style>
+
+<div class="wrap">
+<header>
+  <h1>Adana <span>→</span> Kapadokya</h1>
+  <p class="sub">28 Ekim – 1 Kasım · Pendik'ten arabayla, 5 gün</p>
+</header>
+
+<nav role="tablist">
+  <button role="tab" id="tab-plan" aria-selected="true" data-p="plan">Program</button>
+  <button role="tab" id="tab-yakit" aria-selected="false" data-p="yakit">Benzin</button>
+  <button role="tab" id="tab-bavul" aria-selected="false" data-p="bavul">Bavul</button>
+</nav>
+
+<section id="plan" class="panel"></section>
+
+<section id="yakit" class="panel" hidden>
+  <div class="card">
+    <h3>Kilometre sayacı</h3>
+    <div class="grid">
+      <label for="kmBas">Çıkışta kilometre<input id="kmBas" type="number" inputmode="numeric" min="0" placeholder="örn. 84250"></label>
+      <label for="kmSon">Dönüşte kilometre<input id="kmSon" type="number" inputmode="numeric" min="0" placeholder="eve varınca yaz"></label>
+      <label for="litre">Toplam alınan benzin (L)<input id="litre" type="number" inputmode="decimal" step="0.1" min="0" placeholder="isteğe bağlı"></label>
+    </div>
+    <table id="gercek"></table>
+    <div class="tot"><span id="gercekKm">Kilometreleri girince hesaplanır</span><b id="gercekTl"></b></div>
+    <p class="note">Maliyet, aşağıdaki tüketim ve litre fiyatıyla hesaplanır. Alınan benzini girersen aracının bu yoldaki gerçek tüketimi de çıkar. Değerler eşinle ortak.</p>
+  </div>
+  <div class="card">
+    <h3>Benzin hesabı</h3>
+    <div class="grid">
+      <label for="tuketim">Ortalama tüketim (L/100 km)<input id="tuketim" type="number" inputmode="decimal" step="0.1" min="0" value="7"></label>
+      <label for="fiyat">Litre fiyatı (TL)<input id="fiyat" type="number" inputmode="decimal" step="0.01" min="0" value="50"></label>
+    </div>
+    <p class="note">Değerler örnek. Kendi aracının tüketimini ve pompadaki güncel fiyatı yaz, bu cihazda hatırlanır.</p>
+    <table id="etap"></table>
+    <div class="tot"><span><span id="tkm"></span> km · <span id="tlt"></span> L</span><b id="ttl"></b></div>
+    <p class="note">Mesafeler yaklaşık. Otoyol ücretleri bu hesaba dahil değil.</p>
+  </div>
+</section>
+
+<section id="bavul" class="panel" hidden>
+  <div class="card">
+    <h3>Bavul listesi</h3>
+    <div class="prog" aria-hidden="true"><i id="pbar"></i></div>
+    <p class="note" id="pstat">Liste bu linki açan herkesle ortak, işaretlediğin eşinde de görünür.</p>
+    <div id="liste"></div>
+  </div>
+</section>
+</div>
+
+<script>
+const M=q=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q);
+const DAYS=[
+ {d:"2026-10-28",name:"Çarşamba",tag:"Yol günü",wx:"Adana 16–22°C, yağmur ihtimali %55",
+  route:"https://www.google.com/maps/dir/Yayalar,+Pendik,+%C4%B0stanbul/Bakacak+K%C3%B6fte+%C4%B0brahim%27in+Yeri,+Kayna%C5%9Fl%C4%B1,+D%C3%BCzce/Atl%C4%B1+Otoyol+Hizmetleri+Tuzg%C3%B6l%C3%BC,+%C5%9Eerefliko%C3%A7hisar/Halil%C3%BCrrahman+Dinlenme+Tesisleri,+Pozant%C4%B1,+Adana/Golden+Lake+Hotel,+%C3%87ukurova,+Adana",
+  s:[["05:30","Pendik Yayalar","Çıkış, trafiğe girmeden","Yayalar Pendik İstanbul"],
+     ["08:00","Bakacak Köfte İbrahim'in Yeri","Kahvaltı · eski Bolu Dağı yolu","Bakacak Köfte İbrahim'in Yeri Kaynaşlı"],
+     ["12:30","Atlı Otoyol Tesisi, Tuz Gölü","Öğle yemeği · Köfteci Yusuf","Atlı Otoyol Hizmetleri Tuzgölü"],
+     ["16:15","Halilürrahman, Pozantı","Çay molası","Halilürrahman Dinlenme Tesisleri Pozantı"],
+     ["17:45","Golden Lake Hotel","Otele giriş, dinlenme","Golden Lake Hotel Adana"],
+     ["20:00","Şef Kebap","Akşam yemeği · Yenibaraj, otele ~10 dk","Şef Kebap Yenibaraj Adana"]]},
+ {d:"2026-10-29",name:"Perşembe",tag:"Şehir",wx:"Adana 14–18°C, yağmur %85 · şemsiye",
+  s:[["09:00","Otelde kahvaltı","Terasta göl manzarasıyla",null],
+     ["10:00","Adana Müze Kompleksi","Yarım gün, tek bilet","Adana Arkeoloji Müzesi"],
+     ["12:45","Büyük Saat Ciğercisi İbrahim Usta","Öğle yemeği · ciğer şiş + şalgam","Büyük saat Ciğercisi İbrahim Usta Adana"],
+     ["13:45","Büyük Saat + Kazancılar Çarşısı","Yemekten sonra yürüyüş","Büyük Saat Kulesi Adana"],
+     ["14:15","Taşköprü","Roma dönemi köprü","Taşköprü Adana"],
+     ["14:45","Sabancı Merkez Camii","","Sabancı Merkez Camii Adana"],
+     ["15:30","Zeynep Usta","Katmer · 14:30'da açılır","Zeynep Usta Künefe Katmer Adana"],
+     ["19:30","Mesut Hakim Yenigün","Akşam yemeği","Kebapçı Mesut Hakim Yenigün Adana"],
+     ["21:30","Katmerci Dayı","Gece tatlısı · 02:00'ye kadar","Katmerci Dayı Merkez Adana"]]},
+ /* Kifidis yedek: Cumartesi değil, istenirse Perşembe yerine */
+ {d:"2026-10-30",name:"Cuma",tag:"Doğa",wx:"Adana 13–23°C, güneşli · spor ayakkabı",
+  s:[["08:30","Çatalan Barajı","Manzara molası","Çatalan Barajı Karaisalı"],
+     ["10:30","Varda Köprüsü","Yol dar · 15:00'te dönüşe geç","Varda Köprüsü Karaisalı"],
+     ["12:30","Kapıkaya Kanyonu","Navigasyonda girişi kontrol et","Kapıkaya Kanyonu Karaisalı"],
+     ["17:00","Sevgi Adası","Gün batımı, otelin dibinde","Sevgi Adası Adana"],
+     ["19:00","Kaya Kebab","21:00'de kapanır","Kaya Kebab Adana"],
+     ["20:30","Kuruköprü Şahinoğlu Baklava","Tatlı + eve bir kutu","Kuruköprü Şahinoğlu Baklava Adana"]]},
+ {d:"2026-10-31",name:"Cumartesi",tag:"Kapadokya",wx:"Göreme 6–15°C, güneşli",
+  s:[["09:00","Otelden çıkış","Pozantı–Niğde–Nevşehir, ~3,5 saat",null],
+     ["13:00","Göreme Açık Hava Müzesi","","Göreme Açık Hava Müzesi"],
+     ["17:00","Uçhisar Kalesi","Gün batımı","Uçhisar Kalesi"],
+     ["19:30","Testi kebabı","Avanos ya da Göreme","testi kebabı Göreme"]]},
+ {d:"2026-11-01",name:"Pazar",tag:"Kapadokya",wx:"Göreme 6–16°C, güneşli · sabah bere",
+  s:[["06:00","Balon izleme","Binmek için önceden rezervasyon","Göreme balon izleme noktası"],
+     ["10:00","Paşabağ + Devrent Vadisi","Peribacaları","Paşabağ Vadisi"],
+     ["12:00","Avanos çömlek atölyesi","","Avanos çömlek atölyesi"],
+     ["14:00","Derinkuyu Yeraltı Şehri","Dönüş yoluna yakın","Derinkuyu Yeraltı Şehri"]]}];
+
+const today=new Date(Date.now()+3*3600e3).toISOString().slice(0,10);
+const plan=document.getElementById("plan");
+DAYS.forEach(day=>{
+  const c=document.createElement("article");c.className="day"+(day.d===today?" today":"");
+  const dd=new Date(day.d+"T12:00:00").getDate();
+  c.innerHTML=`<div class="dhead"><h2>${day.name} ${dd}</h2><span class="tag">${day.d===today?"Bugün":day.tag}</span></div><p class="wx">${day.wx}</p>`;
+  if(day.route){const a=document.createElement("a");a.className="cta";a.href=day.route;a.target="_blank";a.rel="noopener";a.textContent="Tüm rotayı Google Maps'te aç";c.append(a)}
+  const ol=document.createElement("ol");
+  day.s.forEach(([t,n,s,q])=>{const li=document.createElement("li");li.className="stop";
+    li.innerHTML=`<span class="t">${t}</span><span class="n"><b></b><small></small></span>`;
+    li.querySelector("b").textContent=n;li.querySelector("small").textContent=s;
+    if(q){const a=document.createElement("a");a.className="go";a.href=M(q);a.target="_blank";a.rel="noopener";a.textContent="Git";li.append(a)}else li.append(document.createElement("span"));
+    ol.append(li)});
+  c.append(ol);plan.append(c)});
+const t=plan.querySelector(".today");if(t)setTimeout(()=>t.scrollIntoView({block:"start"}),0);
+
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav button").forEach(x=>x.setAttribute("aria-selected",x===b));
+  ["plan","yakit","bavul"].forEach(id=>document.getElementById(id).hidden=id!==b.dataset.p)});
+
+/* Benzin */
+const ETAP=[["Pendik → Adana",930],["Adana içi + Karaisalı günü",230],["Adana → Kapadokya",290],["Kapadokya içi",120],["Kapadokya → Pendik",740]];
+const tu=document.getElementById("tuketim"),fi=document.getElementById("fiyat");
+try{const s=JSON.parse(localStorage.getItem("yakit")||"{}");if(s.t)tu.value=s.t;if(s.f)fi.value=s.f}catch(e){}
+const tl=n=>n.toLocaleString("tr-TR",{maximumFractionDigits:0})+" ₺";
+function hesap(){const k=+tu.value||0,p=+fi.value||0;let km=0;
+  document.getElementById("etap").innerHTML=ETAP.map(([n,d])=>{km+=d;return`<tr><td>${n}<br><small style="color:var(--muted)">${d} km · ${(d*k/100).toFixed(1)} L</small></td><td>${tl(d*k/100*p)}</td></tr>`}).join("");
+  const L=km*k/100;document.getElementById("tkm").textContent=km.toLocaleString("tr-TR");
+  document.getElementById("tlt").textContent=L.toFixed(0);document.getElementById("ttl").textContent=tl(L*p);
+  try{localStorage.setItem("yakit",JSON.stringify({t:tu.value,f:fi.value}))}catch(e){}
+  gercek();}
+const kb=document.getElementById("kmBas"),ks=document.getElementById("kmSon"),lt=document.getElementById("litre");
+function gercek(){const b=+kb.value,s=+ks.value,l=+lt.value,k=+tu.value||0,p=+fi.value||0;
+  const g=document.getElementById("gercek"),gk=document.getElementById("gercekKm"),gt=document.getElementById("gercekTl");
+  if(!b||!s||s<=b){g.innerHTML="";gk.textContent=b&&s&&s<=b?"Dönüş kilometresi çıkıştan büyük olmalı":(b?"Çıkış kaydedildi, dönüşte son kilometreyi yaz":"Kilometreleri girince hesaplanır");gt.textContent="";return}
+  const km=s-b,planKm=ETAP.reduce((a,e)=>a+e[1],0);let rows=`<tr><td>Yapılan yol</td><td>${km.toLocaleString("tr-TR")} km</td></tr><tr><td>Plana göre fark</td><td>${(km-planKm>0?"+":"")+(km-planKm).toLocaleString("tr-TR")} km</td></tr>`;
+  let L=km*k/100;
+  if(l>0){const g100=l/km*100;rows+=`<tr><td>Gerçek tüketim</td><td>${g100.toFixed(1)} L/100 km</td></tr>`;L=l}
+  rows+=`<tr><td>${l>0?"Alınan benzin":"Tahmini benzin"}</td><td>${L.toFixed(1)} L</td></tr>`;
+  g.innerHTML=rows;gk.textContent=km.toLocaleString("tr-TR")+" km toplam";gt.textContent=tl(L*p)}
+let kmDoc=null,kmYaz=false,kmTekrar=false;
+try{const s=JSON.parse(localStorage.getItem("km")||"{}");kb.value=s.bas||"";ks.value=s.son||"";lt.value=s.litre||""}catch(e){}
+async function kmKaydet(){const v={bas:kb.value,son:ks.value,litre:lt.value};
+  try{localStorage.setItem("km",JSON.stringify(v))}catch(e){}
+  if(!kmDoc)return;if(kmYaz){kmTekrar=true;return}kmYaz=true;
+  try{await kmDoc.set({bas:kb.value,son:ks.value,litre:lt.value})}catch(e){}
+  kmYaz=false;if(kmTekrar){kmTekrar=false;kmKaydet()}}
+[kb,ks,lt].forEach(i=>{i.oninput=gercek;i.onchange=kmKaydet});
+tu.oninput=fi.oninput=hesap;hesap();
+
+/* Bavul */
+const BAVUL={"Giyim":["Tişörtler","Uzun kollu üstler","Polar / sweatshirt","Su geçirmez kapüşonlu mont","Kot / rahat pantolon","Bere ve ince eldiven","Pijama ve iç çamaşırı"],
+ "Ayakkabı":["Spor / trekking ayakkabı","Yedek ikinci çift"],
+ "Yol":["Şemsiye","Güneş gözlüğü","İnce battaniye (araba)","HGS bakiyesi kontrol","Telefon şarj kablosu + araç şarjı","Su ve atıştırmalık"],
+ "Belgeler":["Kimlikler","Ehliyet + ruhsat","Otel rezervasyonları","Balon rezervasyonu (varsa)"]};
+const key=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"x";
+const tr=s=>s.replace(/[çÇ]/g,"c").replace(/[ğĞ]/g,"g").replace(/[ıİ]/g,"i").replace(/[öÖ]/g,"o").replace(/[şŞ]/g,"s").replace(/[üÜ]/g,"u");
+const state={};const boxes={};const liste=document.getElementById("liste");
+Object.entries(BAVUL).forEach(([g,items])=>{const d=document.createElement("div");d.className="grp";d.innerHTML=`<h4>${g}</h4>`;
+  items.forEach(it=>{const id=key(tr(it));const l=document.createElement("label");l.className="chk";l.htmlFor="b-"+id;
+    l.innerHTML=`<input type="checkbox" id="b-${id}"><span></span>`;l.querySelector("span").textContent=it;
+    const cb=l.querySelector("input");boxes[id]={cb,l};cb.onchange=()=>kaydet(id,cb.checked);d.append(l)});liste.append(d)});
+const total=Object.keys(boxes).length;
+function ciz(){let n=0;for(const id in boxes){const v=!!state[id];boxes[id].cb.checked=v;boxes[id].l.classList.toggle("done",v);if(v)n++}
+  document.getElementById("pbar").style.width=(n/total*100)+"%";}
+let db=null;const pending={};
+async function kaydet(id,v){state[id]=v;ciz();
+  if(!db){try{const s=JSON.parse(localStorage.getItem("bavul")||"{}");s[id]=v;localStorage.setItem("bavul",JSON.stringify(s))}catch(e){}return}
+  if(pending[id])return void(pending[id].next=v);pending[id]={next:null};
+  let val=v;while(true){try{await db.collection("bavul").doc(id).set({checked:val})}catch(e){document.getElementById("pstat").textContent="Kaydedilemedi, bağlantını kontrol edip tekrar işaretle."}
+    const nx=pending[id].next;if(nx===null||nx===val)break;val=nx;pending[id].next=null}delete pending[id]}
+try{Object.assign(state,JSON.parse(localStorage.getItem("bavul")||"{}"))}catch(e){}ciz();
+(async()=>{db=await window.claude?.use?.("db").catch(()=>null);
+  if(!db){document.getElementById("pstat").textContent="Ortak listeye bağlanılamadı; işaretler sadece bu cihazda tutuluyor.";return}
+  kmDoc=db.collection("yolculuk").doc("km");
+  kmDoc.onSnapshot(d=>{const v=d.exists?d.data():null;if(!v||kmYaz)return;
+    if(document.activeElement!==kb)kb.value=v.bas||"";if(document.activeElement!==ks)ks.value=v.son||"";if(document.activeElement!==lt)lt.value=v.litre||"";gercek()},()=>{});
+  db.collection("bavul").onSnapshot(snap=>{snap.docs.forEach(d=>{if(!pending[d.id])state[d.id]=!!d.data().checked});ciz()},
+    ()=>{document.getElementById("pstat").textContent="Ortak liste bağlantısı koptu, sayfayı yenile."})})();
+</script>
+
+<script>if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{})</script>
+</body></html>
