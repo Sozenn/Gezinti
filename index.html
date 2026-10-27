@@ -200,6 +200,21 @@ li.stop.edit,li.stop.ekle{display:block}
 .day.bitti .dtoggle h2{color:var(--muted)}
 .ozet{margin:0;color:var(--muted);font-size:13px}
 .gsifirla{margin-top:8px;width:100%;font:600 13px var(--body);padding:8px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
+/* Fotoğraflar */
+.fotolar{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:8px 0}
+.fk{position:relative;padding:0;border:0;border-radius:10px;overflow:hidden;aspect-ratio:1;background:var(--ink-soft);cursor:zoom-in}
+.fk img{width:100%;height:100%;object-fit:cover;display:block}
+.fbekle{position:absolute;right:4px;bottom:4px;font-size:12px;background:rgba(0,0,0,.5);border-radius:6px;padding:1px 4px}
+.fekle{display:flex;align-items:center;justify-content:center;text-align:center;aspect-ratio:1;border:1px dashed var(--ink);border-radius:10px;color:var(--ink);font:600 13px var(--body);cursor:pointer;padding:6px}
+.fekle input{position:absolute;width:1px;height:1px;opacity:0}
+.lb{position:fixed;inset:0;z-index:50;background:#000;display:flex;align-items:center;justify-content:center}
+.lbimg{max-width:100%;max-height:100%;object-fit:contain}
+.lbust{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:8px;padding:max(12px,env(safe-area-inset-top)) 12px 12px;background:linear-gradient(rgba(0,0,0,.6),transparent);color:#fff;font-size:13px}
+.lbust span{flex:1}
+.lbust button{font:600 14px var(--body);padding:8px 12px;border-radius:10px;border:0;background:rgba(255,255,255,.18);color:#fff;cursor:pointer}
+.lbok{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:64px;border:0;border-radius:12px;background:rgba(255,255,255,.14);color:#fff;font-size:32px;cursor:pointer}
+.lbok.sol{left:8px}.lbok.sag{right:8px}
+.lbyuk{position:absolute;bottom:20px;color:#fff;font-size:13px;background:rgba(0,0,0,.5);padding:6px 10px;border-radius:8px}
 </style>
 
 <div class="wrap">
@@ -514,6 +529,10 @@ function siradaCiz(){
   btn("✓ Vardım",()=>vardim(id,list,i),"vard");
   if(gec>10){const yuv=Math.max(5,Math.round(gec/5)*5);btn("Kalanı +"+yuv+" dk kaydır",()=>kaydir(list,i,yuv))}
   else{g.append(el("small",null,"Gecikme:"));[15,30,60].forEach(d=>btn("+"+d,()=>kaydir(list,i,d)))}
+  btn("Diğer…",()=>{const v=prompt("Bugünün kalanı kaç dakika kaydırılsın?
+Geç kaldıysan artı (örn. 90), erken gittiysen eksi yaz (örn. -20).","");
+    if(v===null)return;const d=Math.round(+String(v).replace(",",".").replace(/[^\d.-]/g,""));
+    if(!d||Math.abs(d)>720)return alert("Geçerli bir dakika yaz (en fazla 12 saat).");kaydir(list,i,d)});
   const son=sonKaydirma();if(son)btn("↶ Geri al",()=>geriAl(),"geri");
   sirada.append(g);
   const sonra=list.slice(i+1).find(hedefMi);if(sonra)sirada.append(el("small","ssonra","Sonra: "+sonra.s.t+" "+sonra.s.n));
@@ -605,9 +624,10 @@ const gunlukAcik=new Set();
 function gunlukKutu(d){
   const det=el("details","gunluk");det.open=gunlukAcik.has(d);det.ontoggle=()=>det.open?gunlukAcik.add(d):gunlukAcik.delete(d);
   const notlar=Object.entries(G.items).filter(([,x])=>x&&x.d===d&&x.m).sort((a,b)=>(a[1].s||0)-(b[1].s||0));
-  det.append(el("summary",null,"📝 Günlük"+(notlar.length?" ("+notlar.length+")":"")));
+  det.append(el("summary",null,"📝 Günlük"+(notlar.length?" · "+notlar.length+" not":"")+(window.fotoHazir?fotoSay(d):"")));
   notlar.forEach(([id,x])=>{const r=el("div","gnot");r.append(el("small",null,new Date(x.s).toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"})),el("span",null,x.m));
     const s=el("button","del","×");s.type="button";s.setAttribute("aria-label","Notu sil");s.onclick=()=>{if(confirm("Not silinsin mi?"))G.sil(id)};r.append(s);det.append(r)});
+  if(window.fotoHazir)det.append(fotoKutu(d));
   const f=el("form","add");const t=el("textarea");t.rows=2;t.maxLength=500;t.placeholder="Ne yediniz, neyi beğendiniz?";t.setAttribute("aria-label","Günlük notu");
   const b=el("button",null,"Ekle");b.type="submit";f.append(t,b);
   f.onsubmit=e=>{e.preventDefault();const v=t.value.trim();if(!v)return;gunlukAcik.add(d);G.koy(yeniId(),{d,m:v,s:Date.now()})};
@@ -657,6 +677,104 @@ function tahminYaz(){
 }
 window.ekstraHazir=true;planCiz();tahminAl();
 setInterval(tahminAl,30*60e3);document.addEventListener("visibilitychange",()=>{if(!document.hidden)tahminAl()});
+
+/* ---------- Gezi fotoğrafları ----------
+   Telefonda IndexedDB'de saklanır (önizleme ~320 px, büyük ~1600 px). Grup varsa Firestore'a da gider:
+   gruplar/{kod}/foto/{id} = {d,s,th}  ·  gruplar/{kod}/fotoBuyuk/{id} = {b}  (büyük resim yalnız açılınca indirilir) */
+const idb=(()=>{let p=null;
+  const ac=()=>p||(p=new Promise((ok,no)=>{const r=indexedDB.open("gezinti",1);
+    r.onupgradeneeded=()=>{r.result.createObjectStore("foto");r.result.createObjectStore("buyuk")};r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)}));
+  const tx=(st,mode,fn)=>ac().then(db=>new Promise((ok,no)=>{const t=db.transaction(st,mode);const r=fn(t.objectStore(st));t.oncomplete=()=>ok(r&&r.result);t.onerror=()=>no(t.error)}));
+  return{get:(st,k)=>tx(st,"readonly",s=>s.get(k)),put:(st,k,v)=>tx(st,"readwrite",s=>s.put(v,k)),del:(st,k)=>tx(st,"readwrite",s=>s.delete(k)),
+    all:st=>ac().then(db=>new Promise((ok,no)=>{const o={};const r=db.transaction(st).objectStore(st).openCursor();
+      r.onsuccess=()=>{const c=r.result;if(c){o[c.key]=c.value;c.continue()}else ok(o)};r.onerror=()=>no(r.error)}))}})();
+let FOTO={};const yukleniyor=new Set();let fotoAbonelik=null;
+async function kucult(file,max,q,sinir){
+  let src;try{src=await createImageBitmap(file,{imageOrientation:"from-image"})}
+  catch(e){src=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=URL.createObjectURL(file)})}
+  const w=src.width,h=src.height,k=Math.min(1,max/Math.max(w,h));
+  const c=document.createElement("canvas");c.width=Math.round(w*k);c.height=Math.round(h*k);
+  c.getContext("2d").drawImage(src,0,0,c.width,c.height);
+  let qq=q,u=c.toDataURL("image/jpeg",qq);while(u.length>sinir&&qq>0.35){qq-=0.08;u=c.toDataURL("image/jpeg",qq)}
+  return u}
+function fotoSay(d){const n=Object.values(FOTO).filter(x=>x.d===d).length;return n?" · "+n+" fotoğraf":""}
+function fotoListe(d){return Object.entries(FOTO).filter(([,x])=>x.d===d).sort((a,b)=>a[1].s-b[1].s)}
+function fotoKutu(d){
+  const k=el("div","fotolar");
+  fotoListe(d).forEach(([id,x],i)=>{const b=el("button","fk");b.type="button";b.setAttribute("aria-label","Fotoğrafı büyüt");
+    const im=el("img");im.src=x.th;im.alt="";im.loading="lazy";b.append(im);
+    if(!x.up&&SYNC.kod)b.append(el("span","fbekle","⏳"));
+    b.onclick=()=>fotoAc(d,i);k.append(b)});
+  const ekle=el("label","fekle");const inp=el("input");inp.type="file";inp.accept="image/*";inp.multiple=true;
+  ekle.append(inp,el("span",null,yukleniyor.has(d)?"Ekleniyor…":"📷 Fotoğraf ekle"));
+  inp.onchange=()=>fotoEkle(d,[...inp.files]);k.append(ekle);
+  return k}
+async function fotoEkle(d,dosyalar){
+  if(!dosyalar.length)return;yukleniyor.add(d);gunlukAcik.add(d);planCiz();
+  for(const f of dosyalar){
+    try{const th=await kucult(f,320,0.72,90000),b=await kucult(f,1600,0.82,950000);
+      const id=yeniId(),meta={d,s:Date.now(),th,up:false};
+      await idb.put("buyuk",id,b);await idb.put("foto",id,meta);FOTO[id]=meta;planCiz();
+      fotoGonder(id)}
+    catch(e){alert("Bir fotoğraf eklenemedi: "+(e&&e.message||e))}}
+  yukleniyor.delete(d);planCiz()}
+async function fotoGonder(id){
+  const f=SYNC.f,kod=SYNC.kod,m=FOTO[id];if(!f||!kod||!m||m.up)return;
+  try{const b=await idb.get("buyuk",id);if(!b)return;
+    await f.setDoc(f.doc(f.db,"gruplar",kod,"fotoBuyuk",id),{b});
+    await f.setDoc(f.doc(f.db,"gruplar",kod,"foto",id),{d:m.d,s:m.s,th:m.th});
+    m.up=true;await idb.put("foto",id,m);planCiz()}catch(e){console.error(e)}}
+async function fotoSil(id){
+  const m=FOTO[id];delete FOTO[id];await idb.del("foto",id);await idb.del("buyuk",id);
+  if(m&&m.up&&SYNC.f&&SYNC.kod){const f=SYNC.f;
+    try{await f.deleteDoc(f.doc(f.db,"gruplar",SYNC.kod,"foto",id));await f.deleteDoc(f.doc(f.db,"gruplar",SYNC.kod,"fotoBuyuk",id))}catch(e){console.error(e)}}
+  planCiz()}
+/* Grup bağlanınca: ortak fotoğrafları dinle, bekleyenleri yükle */
+function fotoGrup(){
+  if(fotoAbonelik){fotoAbonelik();fotoAbonelik=null}
+  const f=SYNC.f,kod=SYNC.kod;if(!f||!kod)return;
+  fotoAbonelik=f.onSnapshot(f.collection(f.db,"gruplar",kod,"foto"),async snap=>{
+    if(snap.metadata.fromCache&&snap.empty)return;
+    const uzak=new Set();
+    for(const d of snap.docs){uzak.add(d.id);const x=d.data();
+      if(!FOTO[d.id]||!FOTO[d.id].up){FOTO[d.id]={d:x.d,s:x.s,th:x.th,up:true};await idb.put("foto",d.id,FOTO[d.id])}}
+    /* Eşin sildiği fotoğrafları burada da kaldır */
+    if(!snap.metadata.fromCache)for(const id of Object.keys(FOTO))if(FOTO[id].up&&!uzak.has(id)){delete FOTO[id];idb.del("foto",id);idb.del("buyuk",id)}
+    planCiz();if(lb.dataset.acik)lbCiz();
+  },e=>console.error(e));
+  Object.keys(FOTO).forEach(id=>{if(!FOTO[id].up)fotoGonder(id)});
+}
+window.addEventListener("grup",fotoGrup);
+
+/* Tam ekran görüntüleyici */
+const lb=el("div","lb");lb.hidden=true;lb.setAttribute("role","dialog");lb.setAttribute("aria-label","Fotoğraf");document.body.append(lb);
+let lbGun=null,lbSira=0;
+function fotoAc(d,i){lbGun=d;lbSira=i;lb.hidden=false;lb.dataset.acik="1";document.body.style.overflow="hidden";lbCiz()}
+function lbKapat(){lb.hidden=true;delete lb.dataset.acik;document.body.style.overflow="";lb.textContent=""}
+async function lbCiz(){
+  const l=fotoListe(lbGun);if(!l.length)return lbKapat();if(lbSira>=l.length)lbSira=l.length-1;
+  const [id,x]=l[lbSira];lb.textContent="";
+  const im=el("img","lbimg");im.src=x.th;im.alt="";lb.append(im);
+  const ust=el("div","lbust");ust.append(el("span",null,gunAdi(x.d)+" · "+new Date(x.s).toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"})+" · "+(lbSira+1)+"/"+l.length));
+  const sil=el("button",null,"🗑 Sil");sil.type="button";sil.onclick=()=>{if(confirm("Fotoğraf silinsin mi?"+(x.up?" Eşinin telefonundan da silinir.":"")))fotoSil(id).then(()=>{if(lb.dataset.acik)lbCiz()})};
+  const kap=el("button",null,"✕");kap.type="button";kap.setAttribute("aria-label","Kapat");kap.onclick=lbKapat;
+  ust.append(sil,kap);lb.append(ust);
+  if(l.length>1){const o=el("button","lbok sol","‹");o.type="button";o.setAttribute("aria-label","Önceki");o.onclick=e=>{e.stopPropagation();lbSira=(lbSira-1+l.length)%l.length;lbCiz()};
+    const s=el("button","lbok sag","›");s.type="button";s.setAttribute("aria-label","Sonraki");s.onclick=e=>{e.stopPropagation();lbSira=(lbSira+1)%l.length;lbCiz()};lb.append(o,s)}
+  /* Büyük resim: önce telefondan, yoksa gruptan indir */
+  let b=await idb.get("buyuk",id);
+  if(!b&&SYNC.f&&SYNC.kod){const yuk=el("span","lbyuk","Büyük hali indiriliyor…");lb.append(yuk);
+    try{const s=await SYNC.f.getDoc(SYNC.f.doc(SYNC.f.db,"gruplar",SYNC.kod,"fotoBuyuk",id));if(s.exists()){b=s.data().b;await idb.put("buyuk",id,b)}}catch(e){}
+    yuk.remove()}
+  if(b&&lb.dataset.acik&&fotoListe(lbGun)[lbSira]?.[0]===id)im.src=b;
+}
+lb.addEventListener("click",e=>{if(e.target===lb)lbKapat()});
+document.addEventListener("keydown",e=>{if(!lb.dataset.acik)return;
+  if(e.key==="Escape")lbKapat();if(e.key==="ArrowRight")lb.querySelector(".sag")?.click();if(e.key==="ArrowLeft")lb.querySelector(".sol")?.click()});
+let lbX=null;lb.addEventListener("touchstart",e=>{lbX=e.touches[0].clientX},{passive:true});
+lb.addEventListener("touchend",e=>{if(lbX==null)return;const dx=e.changedTouches[0].clientX-lbX;lbX=null;
+  if(Math.abs(dx)>50)lb.querySelector(dx<0?".sag":".sol")?.click()});
+idb.all("foto").then(o=>{FOTO=o||{};window.fotoHazir=true;planCiz();fotoGrup()}).catch(()=>{window.fotoHazir=true;planCiz()});
 
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
   document.querySelectorAll("nav button").forEach(x=>x.setAttribute("aria-selected",x===b));
@@ -981,6 +1099,7 @@ async function baglan(kod){
     const f=await firebase();
     abonelik.forEach(x=>x());abonelik=[];
     if(SYNC.kod!==kod)return;
+    SYNC.f=f;
     SYNC.yaz=(ad,degisim,tam)=>{const ref=f.doc(f.db,"gruplar",kod,"listeler",ad);
       if(tam)return f.setDoc(ref,{items:tam}).catch(hata);
       const items={};Object.entries(degisim||{}).forEach(([id,v])=>items[id]=v===null?f.deleteField():v);
@@ -997,10 +1116,11 @@ async function baglan(kod){
       },hata));
     });
     Object.values(L).forEach(x=>x.yenile());
+    window.dispatchEvent(new Event("grup"));
   }catch(e){hata(e)}
 }
 function ayril(){
-  abonelik.forEach(x=>x());abonelik=[];SYNC.kod=null;SYNC.yaz=null;
+  abonelik.forEach(x=>x());abonelik=[];SYNC.kod=null;SYNC.yaz=null;SYNC.f=null;window.dispatchEvent(new Event("grup"));
   try{localStorage.removeItem(KEY)}catch(e){}
   durum="kapali";mesaj="";ciz();Object.values(L).forEach(x=>x.yenile());
 }
