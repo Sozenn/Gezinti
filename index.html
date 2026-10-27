@@ -48,6 +48,7 @@ li.stop{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:ce
 .quick a{text-align:center;font:600 14px var(--body);text-decoration:none;color:var(--ink);background:var(--ink-soft);padding:11px 6px;border-radius:10px}
 .cta{display:block;text-align:center;font:600 15px var(--body);text-decoration:none;background:var(--accent);color:#fff;padding:12px;border-radius:10px}
 .panel{display:flex;flex-direction:column;gap:14px}
+[hidden]{display:none!important}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px}
 .card h3{font-family:var(--display);font-weight:600;font-size:18px;margin:0}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
@@ -91,7 +92,7 @@ td{padding:7px 0;border-top:1px solid var(--line)}td:last-child{text-align:right
     </div>
     <table id="gercek"></table>
     <div class="tot"><span id="gercekKm">Kilometreleri girince hesaplanır</span><b id="gercekTl"></b></div>
-    <p class="note">Maliyet, aşağıdaki tüketim ve litre fiyatıyla hesaplanır. Alınan benzini girersen aracının bu yoldaki gerçek tüketimi de çıkar. Değerler eşinle ortak.</p>
+    <p class="note">Maliyet, aşağıdaki tüketim ve litre fiyatıyla hesaplanır. Alınan benzini girersen aracının bu yoldaki gerçek tüketimi de çıkar. Değerler bu cihazda saklanır.</p>
   </div>
   <div class="card">
     <h3>Benzin hesabı</h3>
