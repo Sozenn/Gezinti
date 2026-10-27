@@ -105,6 +105,10 @@ td{padding:7px 0;border-top:1px solid var(--line)}td:last-child{text-align:right
 .sbtn{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .sbtn a{font:600 15px var(--body);text-decoration:none;padding:11px 16px;border-radius:10px;background:rgba(255,255,255,.16);color:#fff}
 .sbtn a.ana{background:#fff;color:var(--ink);flex:1;text-align:center;min-width:140px}
+.scik{font-size:14px;font-weight:600;background:rgba(255,255,255,.14);padding:8px 10px;border-radius:10px}
+.go.cik{color:var(--muted);background:var(--ink-soft)}
+.dcik{grid-column:1/-1;flex-direction:row!important;align-items:center;gap:8px!important;color:var(--fg)!important;font-size:14px!important}
+.dcik input{width:20px!important;height:20px;flex:none;accent-color:var(--ink)}
 .ssonra{flex-basis:100%;opacity:.8;font-size:12.5px}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sirada{background:#1c3a4c}}
 :root[data-theme="dark"] .sirada{background:#1c3a4c}
@@ -327,12 +331,13 @@ const dk=t=>{if(!t)return null;const [h,m]=t.split(":").map(Number);return h*60+
 const gece=m=>m!=null&&m<300?m+1440:m;
 const gunAdi=d=>{const g=DAYS.find(x=>x.d===d);return g?g.name:new Date(d+"T12:00:00").toLocaleDateString("tr-TR",{weekday:"long"})};
 const bugunStr=()=>{const n=new Date();return n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")+"-"+String(n.getDate()).padStart(2,"0")};
+const cikisMi=s=>s.c===true||(s.c===undefined&&/^(Pendik Yayalar|Otelden çıkış)$/.test(s.n||""));
 const zamanOf=s=>{const d=new Date(s.d+"T"+(s.t||"00:00")+":00");if(dk(s.t)<300)d.setDate(d.getDate()+1);return d};
 
 /* Planın ilk hali: DAYS içindeki duraklar + bilinen açılış/kapanış saatleri */
 const SAATLER={"Zeynep Usta":{ac:"14:30"},"Katmerci Dayı":{kp:"02:00"},"Kaya Kebab":{kp:"21:00"},"Dorukkaya Green Park":{ac:"08:00",kp:"23:00"}};
 function planVarsayilan(){const o={};let k=1;
-  DAYS.forEach(g=>g.s.forEach(([t,n,s,q])=>{o["p"+k]=Object.assign({d:g.d,t,n,s:s||"",q:q||""},SAATLER[n]||{});k++}));return o}
+  DAYS.forEach(g=>g.s.forEach(([t,n,s,q])=>{o["p"+k]=Object.assign({d:g.d,t,n,s:s||"",q:q||"",c:/^(Pendik Yayalar|Otelden çıkış)$/.test(n)},SAATLER[n]||{});k++}));return o}
 
 /* ---------- Program ---------- */
 const plan=document.getElementById("plan");
@@ -368,10 +373,12 @@ function durakFormu(id,d,ol){
   const alan=(lbl,name,type,ph)=>{const l=el("label",null,lbl);const i=el("input");i.name=name;i.type=type;i.value=s[name]||"";if(ph)i.placeholder=ph;l.append(i);return l};
   f.append(alan("Saat","t","time"),alan("Yer adı","n","text","örn. Kaya Kebab"),alan("Not","s","text","isteğe bağlı"),
     alan("Haritada arama","q","text","örn. Kaya Kebab Adana"),alan("Açılış","ac","time"),alan("Kapanış","kp","time"));
+  {const l=el("label","dcik");const c=el("input");c.type="checkbox";c.name="c";c.checked=id?cikisMi(s):false;
+   l.append(c,el("span",null,"Çıkış noktası (oradan yola çıkıyorum, yol tarifi gerekmez)"));f.append(l)}
   const b=el("div","dbtn");const ok=el("button","ana","Kaydet");ok.type="submit";const ip=el("button",null,"Vazgeç");ip.type="button";
   ip.onclick=()=>{acikForm=null;planCiz()};b.append(ok,ip);f.append(b);
   f.onsubmit=e=>{e.preventDefault();const v=Object.fromEntries(new FormData(f));v.n=v.n.trim();if(!v.n||!v.t)return alert("Saat ve yer adı gerekli.");
-    if(!v.q)v.q=v.n;acikForm=null;P.koy(id||yeniId(),Object.assign(v,{d}))};
+    v.c=!!v.c;if(!v.q)v.q=v.n;acikForm=null;P.koy(id||yeniId(),Object.assign(v,{d}))};
   return f}
 
 function planCiz(){
@@ -399,7 +406,7 @@ function planCiz(){
         e.onclick=()=>{acikForm=id;planCiz()};
         const d=el("button",null,"×");d.type="button";d.setAttribute("aria-label",s.n+" sil");
         d.onclick=()=>{if(confirm(s.n+" plandan silinsin mi?"))P.sil(id)};x.append(e,d);li.append(x)}
-      else li.append(s.q?link(M(s.q),"go","Git"):el("span"));
+      else li.append(cikisMi(s)?el("span","go cik","Çıkış"):s.q?link(M(s.q),"go","Git"):el("span"));
       ol.append(li)});
     if(acikForm==="yeni-"+day.d){const li=el("li","stop edit");li.append(durakFormu(null,day.d));ol.append(li)}
     else if(duzenle){const li=el("li","stop ekle");const b=el("button",null,"+ Durak ekle");b.type="button";
@@ -416,18 +423,23 @@ function siradaCiz(){
   const list=Object.values(P.items).filter(s=>s&&s.d&&s.t&&s.n).map(s=>({s,z:zamanOf(s).getTime()})).sort((a,b)=>a.z-b.z);
   if(!list.length||now>list[list.length-1].z+3*3600e3){sirada.hidden=true;return}
   /* 20 dakika öncesine kadar başlamış durak "şimdi" sayılır */
-  const i=list.findIndex(x=>x.z>=now-20*60e3);if(i<0){sirada.hidden=true;return}
+  const hedefMi=x=>x.s.q&&!cikisMi(x.s);
+  const i=list.findIndex(x=>x.z>=now-20*60e3&&hedefMi(x));if(i<0){sirada.hidden=true;return}
   const {s,z}=list[i],fark=z-now;
+  /* Hedeften önce henüz geçmemiş bir çıkış varsa (ör. 05:30 Pendik) onu ayrıca göster */
+  const cik=list.slice(0,i).filter(x=>x.z>=now-20*60e3&&cikisMi(x.s)).pop();
   sirada.hidden=false;sirada.textContent="";
   const ust=el("div","sust");
-  ust.append(el("span","setk",fark<=0?"Şimdi":i===0&&fark>12*3600e3?"Gezinin ilk durağı":"Sıradaki durak"),
+  ust.append(el("span","setk",fark<=0?"Şimdi":cik?"İlk mola":"Sıradaki durak"),
     el("span","ssay",fark<=0?"başladı":sure(fark)+" sonra"));
   const ad=el("div","sad");ad.append(el("b",null,s.n),el("small",null,gunAdi(s.d)+" "+s.t+(s.s?" · "+s.s:"")));
   const r=saatRozeti(s);if(r)ad.append(r);
-  sirada.append(ust,ad);
+  sirada.append(ust);
+  if(cik){const cf=cik.z-now;sirada.append(el("div","scik","🚗 Yola çıkış "+cik.s.t+" · "+cik.s.n+(cf>0?" · "+sure(cf)+" sonra":" · şimdi")))}
+  sirada.append(ad);
   const b=el("div","sbtn");
   if(s.q){b.append(link(NAV(s.q),"ana","➜ Yol tarifi"),link(M(s.q),null,"📍 Haritada"))}
-  const sonra=list[i+1];if(sonra)b.append(el("small","ssonra","Sonra: "+sonra.s.t+" "+sonra.s.n));
+  const sonra=list.slice(i+1).find(hedefMi);if(sonra)b.append(el("small","ssonra","Sonra: "+sonra.s.t+" "+sonra.s.n));
   sirada.append(b);
 }
 setInterval(()=>{siradaCiz();if(Object.values(P.items).some(s=>s.d===bugunStr()&&(s.ac||s.kp))&&!acikForm)planCiz()},60000);
