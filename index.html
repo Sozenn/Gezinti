@@ -177,11 +177,15 @@ const DAYS=[
      ["13:00","Göreme Açık Hava Müzesi","","Göreme Açık Hava Müzesi"],
      ["17:00","Uçhisar Kalesi","Gün batımı","Uçhisar Kalesi"],
      ["19:30","Testi kebabı","Avanos ya da Göreme","testi kebabı Göreme"]]},
- {d:"2026-11-01",name:"Pazar",tag:"Kapadokya",wx:"Göreme 6–16°C, güneşli · sabah bere",
+ {d:"2026-11-01",name:"Pazar",tag:"Dönüş",wx:"Göreme 6–16°C, güneşli · sabah bere · Kapadokya → Hacıbektaş → Pendik, ~720 km",
+  route:"https://www.google.com/maps/dir/G%C3%B6reme,+Nev%C5%9Fehir/Pa%C5%9Faba%C4%9F+Vadisi,+%C3%87avu%C5%9Fin/Hac%C4%B1bekta%C5%9F+Veli+M%C3%BCzesi,+Hac%C4%B1bekta%C5%9F/K%C4%B1r%C4%B1kkale/Gerede,+Bolu/Yayalar,+Pendik,+%C4%B0stanbul",
   s:[["06:00","Balon izleme","Binmek için önceden rezervasyon","Göreme balon izleme noktası"],
-     ["10:00","Paşabağ + Devrent Vadisi","Peribacaları","Paşabağ Vadisi"],
-     ["12:00","Avanos çömlek atölyesi","","Avanos çömlek atölyesi"],
-     ["14:00","Derinkuyu Yeraltı Şehri","Dönüş yoluna yakın","Derinkuyu Yeraltı Şehri"]]}];
+     ["10:00","Paşabağ + Devrent Vadisi","Peribacaları · 11:30'da yola çık","Paşabağ Vadisi"],
+     ["12:30","Hacıbektaş Veli Müzesi ve Türbesi","Avanos–Gülşehir üzerinden ~1 saat · gezi ~1 saat","Hacıbektaş Veli Müzesi"],
+     ["13:30","Öğle yemeği, Hacıbektaş","Türbe çevresinde · yola çıkmadan benzin al","restoran Hacıbektaş Nevşehir"],
+     ["16:30","Çay ve benzin molası","Kırıkkale civarı · Ankara çevre yoluna girmeden","dinlenme tesisi Kırıkkale"],
+     ["19:15","Akşam yemeği, Gerede","Ankara–İstanbul otoyolunda tesisler","dinlenme tesisi Gerede"],
+     ["23:00","Eve varış","Gerede'den ~3 saat · yorulursan Düzce'de kısa mola","Yayalar Pendik İstanbul"]]}];
 
 const today=new Date(Date.now()+3*3600e3).toISOString().slice(0,10);
 const plan=document.getElementById("plan");
